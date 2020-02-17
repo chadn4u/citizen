@@ -1,6 +1,9 @@
+import 'package:citizens/pages/list/list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 class MainMenu extends StatefulWidget {
+  
   @override
   State < StatefulWidget > createState() => _MainMenuState();
 
@@ -50,7 +53,7 @@ class _MainMenuState extends State < MainMenu > {
 
   _middle() {
     return Container(
-      height: 300,
+      height: 280,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(15)),
         color: Colors.blue[900],
@@ -90,7 +93,9 @@ class _MainMenuState extends State < MainMenu > {
             child: InkWell(
               splashColor: Colors.blue[900], // inkwell color
               child: SizedBox(width: 44, height: 44, child: Icon(image)),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ListData()));
+              },
             ),
           ),
         ),
@@ -102,6 +107,7 @@ class _MainMenuState extends State < MainMenu > {
 
   @override
   Widget build(BuildContext context) {
+    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[900]);
     return Scaffold(
       body: ListView(
         children: < Widget > [
