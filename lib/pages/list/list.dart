@@ -96,6 +96,7 @@ class _ListDataState extends State < ListData > {
             return Dismissible(
               key: Key(lstData[idx].empNo),
               child: _createCard(lstData[idx],context),
+              direction: DismissDirection.startToEnd,
               confirmDismiss: (direction) async {
                 final bool res = await showDialog(
                   context: context,
