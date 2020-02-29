@@ -1,8 +1,11 @@
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
+import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:rounded_letter/rounded_letter.dart';
+import 'package:rounded_letter/shape_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainMenu extends StatefulWidget {
@@ -33,8 +36,8 @@ class _MainMenuState extends State<MainMenu> {
     //     MaterialPageRoute(builder: (context) => page ));
   }
 
-  DateTime currentBackPressTime;
   Future<bool> onWillPop() {
+    DateTime currentBackPressTime;
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
         now.difference(currentBackPressTime) > Duration(seconds: 2)) {
@@ -65,17 +68,24 @@ class _MainMenuState extends State<MainMenu> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ClipOval(
-            child: Material(
-              color: Colors.white, // button color
-              child: InkWell(
-                splashColor: Colors.blue[900], // inkwell color
-                child:
-                    SizedBox(width: 56, height: 56, child: Icon(Icons.person)),
-                onTap: () {},
-              ),
-            ),
-          ),
+          RoundedLetter(
+                    text: Utils().getFirstLetter(name),
+                    shapeColor: Utils().getRandomColor(Utils().getFirstLetter(name)),
+                    shapeType: ShapeType.circle,
+                    borderColor: Colors.white,
+                    borderWidth: 2,
+                  ),
+          // ClipOval(
+          //   child: Material(
+          //     color: Colors.white, // button color
+          //     child: InkWell(
+          //       splashColor: Colors.blue[900], // inkwell color
+          //       child:
+          //           SizedBox(width: 56, height: 56, child: Icon(Icons.person)),
+          //       onTap: () {},
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: 12),
           Text(
             name == null ? 'NULL' : name,
