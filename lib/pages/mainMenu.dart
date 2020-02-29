@@ -2,6 +2,7 @@ import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainMenu extends StatefulWidget {
@@ -21,15 +22,27 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
-  Future _logout(page)async{
+  Future _logout(page) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.clear();
-                  prefs.commit();
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> page),
-                   (route) => false);
-                  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> page));
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => page ));
+    prefs.clear();
+    prefs.commit();
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => page), (route) => false);
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> page));
+    // Navigator.push(context,
+    //     MaterialPageRoute(builder: (context) => page ));
+  }
+
+  DateTime currentBackPressTime;
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(msg: 'Press Back again to exit',toastLength: Toast.LENGTH_SHORT);
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 
   @override
@@ -65,7 +78,7 @@ class _MainMenuState extends State<MainMenu> {
           ),
           SizedBox(height: 12),
           Text(
-            name == null? 'NULL':name,
+            name == null ? 'NULL' : name,
             style: TextStyle(color: Colors.white, fontSize: 22),
           ),
           SizedBox(height: 12),
@@ -81,7 +94,7 @@ class _MainMenuState extends State<MainMenu> {
                 width: 20,
               ),
               Text(
-                empId== null? 'NULL':empId,
+                empId == null ? 'NULL' : empId,
                 style: TextStyle(color: Colors.white, fontSize: 12),
               )
             ],
@@ -107,14 +120,14 @@ class _MainMenuState extends State<MainMenu> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, childAspectRatio: 3 / 3),
         children: <Widget>[
-          _gridItem(Icons.list, 'List',ListData()),
-          _gridItem(Icons.fiber_new, 'New User',null),
-          _gridItem(Icons.leak_add, 'Mutation',null),
-          _gridItem(Icons.settings_power, 'Resignation',null),
-          _gridItem(Icons.computer, 'IT Process',null),
-          _gridItem(Icons.developer_mode, 'Repairing',null),
-          _gridItem(Icons.desktop_mac, 'Monitoring',null),
-          _gridItem(Icons.exit_to_app, 'Logout',LoginPages()),
+          _gridItem(Icons.list, 'List', ListData()),
+          _gridItem(Icons.fiber_new, 'New User', null),
+          _gridItem(Icons.leak_add, 'Mutation', null),
+          _gridItem(Icons.settings_power, 'Resignation', null),
+          _gridItem(Icons.computer, 'IT Process', null),
+          _gridItem(Icons.developer_mode, 'Repairing', null),
+          _gridItem(Icons.desktop_mac, 'Monitoring', null),
+          _gridItem(Icons.exit_to_app, 'Logout', LoginPages()),
         ],
       ),
     );
@@ -131,8 +144,8 @@ class _MainMenuState extends State<MainMenu> {
               child: SizedBox(width: 44, height: 44, child: Icon(image)),
               onTap: () {
                 if (menuName == "List")
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => page ));
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => page));
                 else if (menuName == "Logout") {
                   _logout(page);
                 } else {
@@ -174,9 +187,12 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.blue[900]);
-    return Scaffold(
-      body: ListView(
-        children: <Widget>[_top(), _middle()],
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        body: ListView(
+          children: <Widget>[_top(), _middle()],
+        ),
       ),
     );
   }
