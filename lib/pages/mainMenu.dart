@@ -1,6 +1,5 @@
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
-import 'package:citizens/utils/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,8 +25,11 @@ class _MainMenuState extends State<MainMenu> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.clear();
                   prefs.commit();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => page ));
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> page),
+                   (route) => false);
+                  // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> page));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => page ));
   }
 
   @override
