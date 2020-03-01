@@ -1,28 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'modelLogin.dart';
+part of 'ListData.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ModelLogin _$ModelLoginFromJson(Map<String, dynamic> json) {
-  return ModelLogin(
+ListDataModel _$ListDataModelFromJson(Map<String, dynamic> json) {
+  return ListDataModel(
     json['EMP_NO'] as String,
     json['EMP_NM'] as String,
     json['JOB_CD'] as String,
-    json['STR_CD'] as String,
+    json['JOB_NM'] as String,
+    json['STR_NM'] as String,
     json['CORP_FG'] as String,
-    json['ALL_CORP'] as String,
+    json['CHG_FG'] as String,
   );
 }
 
-Map<String, dynamic> _$ModelLoginToJson(ModelLogin instance) =>
+Map<String, dynamic> _$ListDataModelToJson(ListDataModel instance) =>
     <String, dynamic>{
       'EMP_NO': instance.empNo,
       'EMP_NM': instance.empNm,
       'JOB_CD': instance.jobCd,
-      'STR_CD': instance.strCd,
+      'JOB_NM': instance.jobNm,
+      'STR_NM': instance.strNm,
       'CORP_FG': instance.corpFg,
-      'ALL_CORP': instance.allCorp,
+      'CHG_FG': instance.chgFg,
     };

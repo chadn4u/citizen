@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils{
   String getFirstLetter(String name){
@@ -91,5 +92,15 @@ class Utils{
       break;
     }
     return colorRandom;
+  }
+  Future logout(page,context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    prefs.commit();
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => page), (route) => false);
+    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> page));
+    // Navigator.push(context,
+    //     MaterialPageRoute(builder: (context) => page ));
   }
 }

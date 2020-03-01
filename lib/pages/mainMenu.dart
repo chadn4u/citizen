@@ -2,6 +2,7 @@ import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rounded_letter/rounded_letter.dart';
@@ -14,15 +15,12 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  String name, corp, empId = "";
+  String name, corp, empId, jobCde, strCd, allCorp = "";
+  Utils utils = Utils();
 
   Future _checkSession() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    setState(() {
-      name = pref.getString('empNm');
-      empId = pref.getString('empNo');
-      corp = pref.getString('corpFg');
-    });
+    return pref;
   }
 
   Future _logout(page) async {
@@ -36,13 +34,14 @@ class _MainMenuState extends State<MainMenu> {
     //     MaterialPageRoute(builder: (context) => page ));
   }
 
+  DateTime currentBackPressTime;
   Future<bool> onWillPop() {
-    DateTime currentBackPressTime;
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+        now.difference(currentBackPressTime) > Duration(seconds: 3)) {
       currentBackPressTime = now;
-      Fluttertoast.showToast(msg: 'Press Back again to exit',toastLength: Toast.LENGTH_SHORT);
+      Fluttertoast.showToast(
+          msg: 'Press Back again to exit', toastLength: Toast.LENGTH_SHORT);
       return Future.value(false);
     }
     return Future.value(true);
@@ -52,7 +51,17 @@ class _MainMenuState extends State<MainMenu> {
   void initState() {
     super.initState();
 
-    _checkSession();
+    // _checkSession().then((pref) {
+    //   setState(() {
+    //     name = pref.getString('empNm');
+    //     empId = pref.getString('empNo');
+    //     corp = pref.getString('corpFg');
+    //     jobCde = pref.getString('jobCd');
+    //     strCd = pref.getString('strCd');
+    //     allCorp = pref.getString('allCorp');
+    //   });
+    // });
+    // print(empId);
   }
 
   _top() {
@@ -69,12 +78,12 @@ class _MainMenuState extends State<MainMenu> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RoundedLetter(
-                    text: Utils().getFirstLetter(name),
-                    shapeColor: Utils().getRandomColor(Utils().getFirstLetter(name)),
-                    shapeType: ShapeType.circle,
-                    borderColor: Colors.white,
-                    borderWidth: 2,
-                  ),
+            text: utils.getFirstLetter(name),
+            shapeColor: Utils().getRandomColor(Utils().getFirstLetter(name)),
+            shapeType: ShapeType.circle,
+            borderColor: Colors.white,
+            borderWidth: 2,
+          ),
           // ClipOval(
           //   child: Material(
           //     color: Colors.white, // button color
@@ -130,7 +139,15 @@ class _MainMenuState extends State<MainMenu> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3, childAspectRatio: 3 / 3),
         children: <Widget>[
-          _gridItem(Icons.list, 'List', ListData()),
+          _gridItem(
+              Icons.list,
+              'List',
+              ListData(
+                corpFg: corp,
+                strCd: strCd,
+                jobCd: jobCde,
+                empNo: empId,
+              )),
           _gridItem(Icons.fiber_new, 'New User', null),
           _gridItem(Icons.leak_add, 'Mutation', null),
           _gridItem(Icons.settings_power, 'Resignation', null),
@@ -200,9 +217,25 @@ class _MainMenuState extends State<MainMenu> {
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
-        body: ListView(
-          children: <Widget>[_top(), _middle()],
-        ),
+        body: FutureBuilder(
+            future: _checkSession(),
+            builder: (BuildContext ctx, AsyncSnapshot data) {
+              if (data.data == null) {
+                return Center(
+                  child: Text(data.error.toString()),
+                );
+              } else {
+                name = data.data.getString('empNm');
+                empId = data.data.getString('empNo');
+                corp = data.data.getString('corpFg');
+                jobCde = data.data.getString('jobCd');
+                strCd = data.data.getString('strCd');
+                allCorp = data.data.getString('allCorp');
+                return ListView(
+                  children: <Widget>[_top(), _middle()],
+                );
+              }
+            }),
       ),
     );
   }

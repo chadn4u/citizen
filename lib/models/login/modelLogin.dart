@@ -18,9 +18,12 @@ class ModelLogin{
 
   @JsonKey(name: "CORP_FG")
   final String corpFg;
+
+  @JsonKey(name: "ALL_CORP")
+  final String allCorp;
   
 
-  ModelLogin(this.empNo, this.empNm, this.jobCd, this.strCd, this.corpFg);
+  ModelLogin(this.empNo, this.empNm, this.jobCd, this.strCd, this.corpFg,this.allCorp);
 
   @override
   String toString() {

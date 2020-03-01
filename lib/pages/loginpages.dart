@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:citizens/api/apiRepository.dart';
-import 'package:citizens/models/login/modelLogin.dart';
 import 'package:citizens/models/login/modelLoginFeed.dart';
 import 'package:citizens/models/responseDio/errorResponse.dart';
 import 'package:citizens/models/token/token.dart';
 import 'package:citizens/models/token/tokenRequest.dart';
 import 'package:citizens/pages/mainMenu.dart';
+import 'package:citizens/utils/mainUtils.dart';
 import 'package:citizens/utils/session.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +32,7 @@ class LoginPagesState extends State<LoginPages> {
           session.addToString('jobCd', modelLoginFeed.data[0].jobCd);
           session.addToString('strCd', modelLoginFeed.data[0].strCd);
           session.addToString('corpFg', modelLoginFeed.data[0].corpFg);
+          session.addToString('allCorp', modelLoginFeed.data[0].allCorp);
         } else {
           ErrorResponse errorResponse = value.data;
           _scaffoldKey.currentState.removeCurrentSnackBar();
@@ -49,8 +48,8 @@ class LoginPagesState extends State<LoginPages> {
       pr.hide().then((isHidden) {
         print(isHidden);
       });
-
-      switch (onerror) {
+      DioError dioError = onerror;
+      switch (dioError.type) {
         case DioErrorType.CONNECT_TIMEOUT:
           _scaffoldKey.currentState.removeCurrentSnackBar();
           _scaffoldKey.currentState
@@ -67,9 +66,21 @@ class LoginPagesState extends State<LoginPages> {
               .showSnackBar(SnackBar(content: Text('Receive Timeout')));
           break;
         case DioErrorType.RESPONSE:
-          _scaffoldKey.currentState.removeCurrentSnackBar();
-          _scaffoldKey.currentState.showSnackBar(
-              SnackBar(content: Text('Error ${onerror.toString()}')));
+          if (dioError.response.toString().contains('Invalid Token')) {
+            _scaffoldKey.currentState.removeCurrentSnackBar();
+            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                content: Text('Token Expired.... try Relogin'),
+                action: SnackBarAction(
+                  label: 'Relogin',
+                  onPressed: () {
+                    Utils().logout(LoginPages(), context);
+                  },
+                )));
+          } else {
+            _scaffoldKey.currentState.removeCurrentSnackBar();
+            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                content: Text('Error ${dioError.response.toString()}')));
+          }
           break;
         case DioErrorType.CANCEL:
           _scaffoldKey.currentState.removeCurrentSnackBar();
@@ -255,55 +266,83 @@ class LoginPagesState extends State<LoginPages> {
                                   pr.hide().then((isHidden) {
                                     print(isHidden);
                                   });
-                                  switch (onerror) {
-                                    case DioErrorType.CONNECT_TIMEOUT:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text('Connection Timeout')));
-                                      break;
-                                    case DioErrorType.SEND_TIMEOUT:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content: Text('Send Timeout')));
-                                      break;
-                                    case DioErrorType.RECEIVE_TIMEOUT:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text('Receive Timeout')));
-                                      break;
-                                    case DioErrorType.RESPONSE:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Error ${onerror.toString()}')));
-                                      break;
-                                    case DioErrorType.CANCEL:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text('Operation Cancelled')));
-                                      break;
-                                    case DioErrorType.DEFAULT:
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Failed host lookup, Please make sure you have used Lotte Connection')));
+                                  if (onerror is DioError) {
+                                    DioError dioError = onerror;
+                                    switch (dioError.type) {
+                                      case DioErrorType.CONNECT_TIMEOUT:
+                                        _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Connection Timeout')));
+                                        break;
+                                      case DioErrorType.SEND_TIMEOUT:
+                                        _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content: Text('Send Timeout')));
+                                        break;
+                                      case DioErrorType.RECEIVE_TIMEOUT:
+                                        _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content:
+                                                    Text('Receive Timeout')));
+                                        break;
+                                      case DioErrorType.RESPONSE:
+                                        if (dioError.response
+                                            .toString()
+                                            .contains('Invalid Token')) {
+                                          _scaffoldKey.currentState
+                                              .removeCurrentSnackBar();
+                                          _scaffoldKey.currentState
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Token Expired.... try Relogin'),
+                                                  action: SnackBarAction(
+                                                    label: 'Relogin',
+                                                    onPressed: () {
+                                                      Utils().logout(
+                                                          LoginPages(),
+                                                          context);
+                                                    },
+                                                  )));
+                                        } else {
+                                          _scaffoldKey.currentState
+                                              .removeCurrentSnackBar();
+                                          _scaffoldKey.currentState
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      'Error ${dioError.response.toString()}')));
+                                        }
+                                        break;
+                                      case DioErrorType.CANCEL:
+                                        _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Operation Cancelled')));
+                                        break;
+                                      case DioErrorType.DEFAULT:
+                                        _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Failed host lookup, Please make sure you have used Lotte Connection')));
 
-                                      break;
+                                        break;
+                                    }
+                                  }else{
+                                    _scaffoldKey.currentState
+                                            .removeCurrentSnackBar();
+                                        _scaffoldKey.currentState.showSnackBar(
+                                            SnackBar(
+                                                content: Text(onerror.toString())));
                                   }
                                 }).whenComplete(() {});
                               }
