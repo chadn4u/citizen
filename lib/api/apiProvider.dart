@@ -130,7 +130,7 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   //dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
       response = await dio.get('http://frontier.lottemart.co.id/Citizen/listSearch',

@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:citizens/api/apiRepository.dart';
 import 'package:citizens/models/list/ListData.dart';
 import 'package:citizens/models/list/listFeed.dart';
@@ -6,6 +7,7 @@ import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
 
@@ -32,14 +34,25 @@ class _ListDataState extends State<ListData> {
   final List<ListDataModel> lstDataTemp = [];
   final int initialMin = 0;
   final int initialMax = 20;
-  int minMove = 0;
-  int maxMove = 0;
+  int minMove;
+  int maxMove;
+  int minMoveTemp;
+  int maxMoveTemp;
   int totalData;
+  int totalDataTemp;
   bool isEnded = false;
   bool isLoading = false;
   bool isSearch = false;
   Map<String, dynamic> dataForRequest = new Map();
   ScrollController scrollController = new ScrollController();
+  // final AsyncMemoizer _memoizer = AsyncMemoizer();
+
+  // _fetchData() {
+  //   return this._memoizer.runOnce(() async {
+  //     await Future.delayed(Duration(seconds: 2));
+  //     return ApiRepository().getListRepo(dataForRequest);
+  //   });
+  // }
 
   List<DropdownMenuItem<SearchList>> _dropdownMenuItems;
   SearchList selectedSearch;
@@ -115,7 +128,6 @@ class _ListDataState extends State<ListData> {
   }
 
   bool onNotification(ScrollNotification notification) {
-    
     if (!isEnded) {
       if (notification is ScrollUpdateNotification) {
         if (scrollController.position.maxScrollExtent ==
@@ -124,6 +136,8 @@ class _ListDataState extends State<ListData> {
             setState(() {
               minMove = initialMin;
               maxMove = initialMax;
+              maxMoveTemp = initialMax;
+              minMoveTemp = initialMin;
               isEnded = true;
               _scaffoldKey.currentState.removeCurrentSnackBar();
               _scaffoldKey.currentState
@@ -137,16 +151,29 @@ class _ListDataState extends State<ListData> {
                   minMove >= totalData ? totalData : minMove;
               dataForRequest['max'] =
                   maxMove >= totalData ? totalData : maxMove;
-              ApiRepository().getListRepo(dataForRequest).then((value) {
-                ListFeed listFeedMove = value.data;
-                setState(() {
-                  isLoading = true;
-                  lstData.addAll(listFeedMove.data);
+
+              if (!isSearch) {
+                ApiRepository().getListRepo(dataForRequest).then((value) {
+                  ListFeed listFeedMove = value.data;
+                  setState(() {
+                    isLoading = true;
+                    lstData.addAll(listFeedMove.data);
+                  });
+                }).whenComplete(() {
+                  
+                  setState(() {isLoading = false;});
                 });
-              }).whenComplete(() {
-                isLoading = false;
-                setState(() {});
-              });
+              } else {
+                ApiRepository().getListSearchRepo(dataForRequest).then((value) {
+                  ListFeed listFeedMove = value.data;
+                  setState(() {
+                    isLoading = true;
+                    lstData.addAll(listFeedMove.data);
+                  });
+                }).whenComplete(() {
+                  setState(() {isLoading = false;});
+                });
+              }
             } else {
               _scaffoldKey.currentState.removeCurrentSnackBar();
               _scaffoldKey.currentState.showSnackBar(
@@ -160,27 +187,6 @@ class _ListDataState extends State<ListData> {
     return true;
   }
 
-  Future _onRefresh() async {
-    setState(() {
-      minMove = initialMin;
-      maxMove = initialMax;
-      dataForRequest['min'] = minMove;
-      dataForRequest['max'] = maxMove;
-      isEnded = false;
-      lstData.clear();
-    });
-    ApiRepository().getListRepo(dataForRequest).then((value) {
-      ListFeed listFeedMove = value.data;
-      setState(() {
-        lstData.addAll(listFeedMove.data);
-      });
-    }).whenComplete(() {
-      _scaffoldKey.currentState.removeCurrentSnackBar();
-      _scaffoldKey.currentState
-          .showSnackBar(SnackBar(content: Text('Data Refreshed')));
-    });
-    return null;
-  }
 
   @override
   void dispose() {
@@ -310,14 +316,14 @@ class _ListDataState extends State<ListData> {
                 child: CircularProgressIndicator(),
               );
             } else {
+              print('tai kucing');
               ResponseDio responseDio = data.data;
               ListFeed listFeed = responseDio.data;
               dataForRequest['totalData'] = listFeed.totalData;
               minMove = initialMin;
               maxMove = initialMax;
               totalData = int.parse(listFeed.totalData);
-              if(!isSearch)
-                lstData.addAll(listFeed.data);
+              if (!isSearch) lstData.addAll(listFeed.data);
               return NotificationListener(
                 onNotification: onNotification,
                 child: Container(
@@ -409,6 +415,14 @@ class _ListDataState extends State<ListData> {
           onPressed: () {
             if (isSearch) {
               setState(() {
+                minMove = minMoveTemp;
+                maxMove = maxMoveTemp;
+                totalData = totalDataTemp;
+
+                minMoveTemp = 0;
+                maxMoveTemp = initialMax;
+                totalDataTemp = null;
+
                 isSearch = false;
                 lstData.clear();
                 lstData.addAll(lstDataTemp);
@@ -493,19 +507,31 @@ class _ListDataState extends State<ListData> {
                           width: double.infinity,
                           child: FlatButton(
                               onPressed: () {
+                                minMoveTemp = minMove;
+                                maxMoveTemp = maxMove;
+                                minMove = initialMin;
+                                maxMove = initialMax;
+                                dataForRequest['min'] = minMove;
+                                dataForRequest['max'] = maxMove;
+                                dataForRequest['totalData'] = null;
                                 dataForRequest['pilihan'] = selectedSearch.id;
                                 dataForRequest['konten'] =
                                     searchController.text;
                                 ApiRepository()
                                     .getListSearchRepo(dataForRequest)
                                     .then((value) {
-                                  this.setState(() {
-                                    ListFeed listFeed = value.data;
-                                    lstDataTemp.addAll(lstData);
-                                    lstData.clear();
-                                    lstData.addAll(listFeed.data);
-                                    isSearch = true;
-                                  });
+                                  SchedulerBinding.instance
+                                      .addPostFrameCallback((_) => setState(() {
+                                            ListFeed listFeed = value.data;
+                                            totalDataTemp = totalData;
+                                            totalData =
+                                                int.parse(listFeed.totalData);
+                                                
+                                            lstDataTemp.addAll(lstData);
+                                            lstData.clear();
+                                            lstData.addAll(listFeed.data);
+                                            isSearch = true;
+                                          }));
                                 }).catchError((onError) {
                                   if (onError is DioError) {
                                     DioError dioError = onError.error;
@@ -616,8 +642,8 @@ class _ListDataState extends State<ListData> {
                                                   Text(onError.toString())));
                                     });
                                   }
-                                  
                                 }).whenComplete(() {
+                                  Navigator.pop(context);
                                 });
                               },
                               child: Text(
