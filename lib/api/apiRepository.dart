@@ -8,6 +8,6 @@ class ApiRepository{
 
   Future<ResponseDio> getTokenRepo(Map data) => apiProvider.getTokenProvider(data);
   Future<ResponseDio> getLoginRepo(String id, String password) => apiProvider.getLogin(id,password);
-  Future<ResponseDio> getListRepo(Map<String, dynamic> data) => apiProvider.getList(data);
-  Future<ResponseDio> getListSearchRepo(Map<String, dynamic> data) => apiProvider.getListSearch(data);
+  Future<ResponseDio> getListRepo(Map<String, dynamic> data) async => await apiProvider.getList(data);
+  Future<ResponseDio> getListSearchRepo(Map<String, dynamic> data)async => await apiProvider.getListSearch(data);
 }

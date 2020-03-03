@@ -2,7 +2,6 @@ import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rounded_letter/rounded_letter.dart';

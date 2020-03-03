@@ -1,5 +1,7 @@
-import 'package:async/async.dart';
 import 'package:citizens/api/apiRepository.dart';
+import 'package:citizens/bloc/list/blocList.dart';
+import 'package:citizens/bloc/list/blocListEvents.dart';
+import 'package:citizens/bloc/list/blocListState.dart';
 import 'package:citizens/models/list/ListData.dart';
 import 'package:citizens/models/list/listFeed.dart';
 import 'package:citizens/models/list/searchList.dart';
@@ -8,6 +10,7 @@ import 'package:citizens/utils/mainUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
 
@@ -34,6 +37,7 @@ class _ListDataState extends State<ListData> {
   final List<ListDataModel> lstDataTemp = [];
   final int initialMin = 0;
   final int initialMax = 20;
+  var stateAsListFetched;
   int minMove;
   int maxMove;
   int minMoveTemp;
@@ -45,6 +49,8 @@ class _ListDataState extends State<ListData> {
   bool isSearch = false;
   Map<String, dynamic> dataForRequest = new Map();
   ScrollController scrollController = new ScrollController();
+
+  ListBloc listBloc;
   // final AsyncMemoizer _memoizer = AsyncMemoizer();
 
   // _fetchData() {
@@ -133,46 +139,39 @@ class _ListDataState extends State<ListData> {
         if (scrollController.position.maxScrollExtent ==
             scrollController.offset) {
           if (minMove >= totalData) {
-            setState(() {
-              minMove = initialMin;
-              maxMove = initialMax;
-              maxMoveTemp = initialMax;
-              minMoveTemp = initialMin;
-              isEnded = true;
-              _scaffoldKey.currentState.removeCurrentSnackBar();
-              _scaffoldKey.currentState
-                  .showSnackBar(SnackBar(content: Text('Already End of Page')));
-            });
+            minMove = initialMin;
+            maxMove = initialMax;
+            maxMoveTemp = initialMax;
+            minMoveTemp = initialMin;
+            isEnded = true;
+            _scaffoldKey.currentState.removeCurrentSnackBar();
+            _scaffoldKey.currentState
+                .showSnackBar(SnackBar(content: Text('Already End of Page')));
           } else {
             if (!isLoading) {
               minMove = maxMove + 1;
               maxMove = maxMove + initialMax;
-              dataForRequest['min'] =
-                  minMove >= totalData ? totalData : minMove;
-              dataForRequest['max'] =
-                  maxMove >= totalData ? totalData : maxMove;
+              // dataForRequest['min'] =
+              //     minMove >= totalData ? totalData : minMove;
+              // dataForRequest['max'] =
+              //     maxMove >= totalData ? totalData : maxMove;
 
               if (!isSearch) {
-                ApiRepository().getListRepo(dataForRequest).then((value) {
-                  ListFeed listFeedMove = value.data;
-                  setState(() {
-                    isLoading = true;
-                    lstData.addAll(listFeedMove.data);
-                  });
-                }).whenComplete(() {
-                  
-                  setState(() {isLoading = false;});
-                });
+                isLoading = true;
+                listBloc.add(LoadMoreEvent(widget.jobCd, widget.strCd,
+                    widget.empNo, widget.corpFg, minMove, maxMove, totalData));
               } else {
-                ApiRepository().getListSearchRepo(dataForRequest).then((value) {
-                  ListFeed listFeedMove = value.data;
-                  setState(() {
-                    isLoading = true;
-                    lstData.addAll(listFeedMove.data);
-                  });
-                }).whenComplete(() {
-                  setState(() {isLoading = false;});
-                });
+                isLoading = true;
+                listBloc.add(LoadMoreSearchEvent(
+                                    widget.jobCd,
+                                    widget.strCd,
+                                    widget.empNo,
+                                    widget.corpFg,
+                                    minMove,
+                                    maxMove,
+                                    totalData,
+                                    selectedSearch.id,
+                                    searchController.text));
               }
             } else {
               _scaffoldKey.currentState.removeCurrentSnackBar();
@@ -187,9 +186,9 @@ class _ListDataState extends State<ListData> {
     return true;
   }
 
-
   @override
   void dispose() {
+    listBloc.close();
     super.dispose();
   }
 
@@ -212,232 +211,161 @@ class _ListDataState extends State<ListData> {
 
     _dropdownMenuItems = buildDropdownMenuItems(SearchList.getList());
     selectedSearch = _dropdownMenuItems[0].value;
-    dataForRequest['jobCd'] = widget.jobCd;
-    dataForRequest['strCd'] = widget.strCd;
-    dataForRequest['empNo'] = widget.empNo;
-    dataForRequest['corpFg'] = widget.corpFg;
-    dataForRequest['min'] = initialMin;
-    dataForRequest['max'] = initialMax;
-    dataForRequest['totalData'] = null;
+    listBloc = ListBloc();
+    listBloc.add(FirstLoadEvent(
+        widget.jobCd, widget.strCd, widget.empNo, widget.corpFg, 0, 20));
   }
 
   @override
   Widget build(BuildContext context) {
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    return Scaffold(
-      key: _scaffoldKey,
-      extendBody: true,
-      body: FutureBuilder(
-          future: ApiRepository().getListRepo(dataForRequest),
-          builder: (BuildContext ctx, AsyncSnapshot data) {
-            if (data.hasError) {
-              if (data.error is DioError) {
-                DioError dioError = data.error;
-                switch (dioError.type) {
-                  case DioErrorType.CONNECT_TIMEOUT:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
-                      _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Connection Timeout')));
-                    });
-
-                    break;
-                  case DioErrorType.SEND_TIMEOUT:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
-                      _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Send Timeout')));
-                    });
-
-                    break;
-                  case DioErrorType.RECEIVE_TIMEOUT:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
-                      _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Receive Timeout')));
-                    });
-
-                    break;
-                  case DioErrorType.RESPONSE:
-                    if (dioError.response
-                        .toString()
-                        .contains('Invalid Token')) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scaffoldKey.currentState.removeCurrentSnackBar();
-                        _scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content: Text('Token Expired.... try Relogin'),
-                            action: SnackBarAction(
-                              label: 'Relogin',
-                              onPressed: () {
-                                Utils().logout(LoginPages(), context);
-                              },
-                            )));
-                      });
-                    } else {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scaffoldKey.currentState.removeCurrentSnackBar();
-                        _scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content:
-                                Text('Error ${dioError.response.toString()}')));
-                      });
-                    }
-
-                    break;
-                  case DioErrorType.CANCEL:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
-                      _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Operation Cancelled')));
-                    });
-
-                    break;
-                  case DioErrorType.DEFAULT:
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scaffoldKey.currentState.removeCurrentSnackBar();
-                      _scaffoldKey.currentState.showSnackBar(SnackBar(
-                          content: Text(
-                              'Failed host lookup, Please make sure you have used Lotte Connection')));
-                    });
-
-                    break;
-                }
-                return Center(
-                  child: Text(dioError.response.toString()),
-                );
-              } else {
-                return Center(
-                  child: Text(data.error.toString()),
-                );
-              }
-            }
-
-            if (data.data == null) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+    return BlocProvider(
+      create: (BuildContext context) => listBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        extendBody: true,
+        body: BlocBuilder<ListBloc, ListState>(builder: (ctx, state) {
+          if (state is ListUninitializedState) {
+            return Center(child: Text('Uninitialized State'));
+          } else if (state is ListEmptyState) {
+            return Center(child: Text('No Data Found'));
+          } else if (state is ListErrorState) {
+            return Center(child: Text('Error'));
+          } else {
+            isLoading = false;
+            if (state is ListFetchedState) {
+              stateAsListFetched = state as ListFetchedState;
             } else {
-              print('tai kucing');
-              ResponseDio responseDio = data.data;
-              ListFeed listFeed = responseDio.data;
-              dataForRequest['totalData'] = listFeed.totalData;
-              minMove = initialMin;
-              maxMove = initialMax;
-              totalData = int.parse(listFeed.totalData);
-              if (!isSearch) lstData.addAll(listFeed.data);
-              return NotificationListener(
-                onNotification: onNotification,
-                child: Container(
-                  color: Colors.blue[900],
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      controller: scrollController,
-                      itemCount: lstData.length,
-                      itemBuilder: (BuildContext ctx, int idx) {
-                        return Dismissible(
-                          key: Key(lstData[idx].empNo),
-                          child: _createCard(lstData[idx], context),
-                          direction: DismissDirection.startToEnd,
-                          confirmDismiss: (direction) async {
-                            final bool res = await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: Text(
-                                        "Want to see the detail of ${lstData[idx].empNm} ? "),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        child: Text(
-                                          "No",
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      FlatButton(
-                                        child: Text(
-                                          "Yes",
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailList(
-                                                        corpFg:
-                                                            lstData[idx].corpFg,
-                                                        empNo:
-                                                            lstData[idx].empNo,
-                                                        jobNm:
-                                                            lstData[idx].jobNm,
-                                                        name:
-                                                            lstData[idx].empNm,
-                                                        strCd:
-                                                            lstData[idx].strNm,
-                                                      )));
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                });
-                            return res;
-                          },
-                        );
-                        // _createCard(lstData[idx]);
-                      }),
-                ),
-              );
+              stateAsListFetched = state as ListFetchedSearchState;
             }
-          }),
-      bottomNavigationBar: Container(
-        height: 55,
-        child: BottomAppBar(
-          color: Colors.blue[900],
-          shape: CircularNotchedRectangle(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              IconButton(
-                  iconSize: 22,
-                  padding: EdgeInsets.only(left: 20),
-                  color: Colors.white,
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  }),
-            ],
+            ResponseDio responseDio = stateAsListFetched.responsedio;
+            ListFeed listFeed = responseDio.data;
+            //dataForRequest['totalData'] = listFeed.totalData;
+            minMove = initialMin;
+            maxMove = initialMax;
+            totalData = int.parse(listFeed.totalData);
+            if (!isSearch)
+              lstData.addAll(listFeed.data);
+            else {
+              totalDataTemp = totalData;
+              totalData = int.parse(listFeed.totalData);
+
+              lstDataTemp.addAll(lstData);
+              lstData.clear();
+              lstData.addAll(listFeed.data);
+            }
+
+            return NotificationListener(
+              onNotification: onNotification,
+              child: Container(
+                color: Colors.blue[900],
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    controller: scrollController,
+                    itemCount: lstData.length,
+                    itemBuilder: (BuildContext ctx, int idx) {
+                      return Dismissible(
+                        key: Key(lstData[idx].empNo),
+                        child: _createCard(lstData[idx], context),
+                        direction: DismissDirection.startToEnd,
+                        confirmDismiss: (direction) async {
+                          final bool res = await showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Text(
+                                      "Want to see the detail of ${lstData[idx].empNm} ? "),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text(
+                                        "No",
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailList(
+                                                      corpFg:
+                                                          lstData[idx].corpFg,
+                                                      empNo: lstData[idx].empNo,
+                                                      jobNm: lstData[idx].jobNm,
+                                                      name: lstData[idx].empNm,
+                                                      strCd: lstData[idx].strNm,
+                                                    )));
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                          return res;
+                        },
+                      );
+                      // _createCard(lstData[idx]);
+                    }),
+              ),
+            );
+          }
+        }),
+        bottomNavigationBar: Container(
+          height: 55,
+          child: BottomAppBar(
+            color: Colors.blue[900],
+            shape: CircularNotchedRectangle(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                IconButton(
+                    iconSize: 22,
+                    padding: EdgeInsets.only(left: 20),
+                    color: Colors.white,
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    }),
+              ],
+            ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              if (isSearch) {
+                setState(() {
+                  minMove = minMoveTemp;
+                  maxMove = maxMoveTemp;
+                  totalData = totalDataTemp;
+
+                  minMoveTemp = 0;
+                  maxMoveTemp = initialMax;
+                  totalDataTemp = null;
+
+                  isSearch = false;
+                  lstData.clear();
+                  lstData.addAll(lstDataTemp);
+                  lstDataTemp.clear();
+                });
+              } else {
+                _settingModalBottomSheet(context);
+              }
+            },
+            backgroundColor: Colors.blue[900],
+            child: Icon(
+              isSearch ? Icons.close : Icons.search,
+              color: Colors.white,
+            )),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (isSearch) {
-              setState(() {
-                minMove = minMoveTemp;
-                maxMove = maxMoveTemp;
-                totalData = totalDataTemp;
-
-                minMoveTemp = 0;
-                maxMoveTemp = initialMax;
-                totalDataTemp = null;
-
-                isSearch = false;
-                lstData.clear();
-                lstData.addAll(lstDataTemp);
-                lstDataTemp.clear();
-              });
-            } else {
-              _settingModalBottomSheet(context);
-            }
-          },
-          backgroundColor: Colors.blue[900],
-          child: Icon(
-            isSearch ? Icons.close : Icons.search,
-            color: Colors.white,
-          )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -507,144 +435,28 @@ class _ListDataState extends State<ListData> {
                           width: double.infinity,
                           child: FlatButton(
                               onPressed: () {
+                                isSearch = true;
                                 minMoveTemp = minMove;
                                 maxMoveTemp = maxMove;
                                 minMove = initialMin;
                                 maxMove = initialMax;
-                                dataForRequest['min'] = minMove;
-                                dataForRequest['max'] = maxMove;
-                                dataForRequest['totalData'] = null;
-                                dataForRequest['pilihan'] = selectedSearch.id;
-                                dataForRequest['konten'] =
-                                    searchController.text;
-                                ApiRepository()
-                                    .getListSearchRepo(dataForRequest)
-                                    .then((value) {
-                                  SchedulerBinding.instance
-                                      .addPostFrameCallback((_) => setState(() {
-                                            ListFeed listFeed = value.data;
-                                            totalDataTemp = totalData;
-                                            totalData =
-                                                int.parse(listFeed.totalData);
-                                                
-                                            lstDataTemp.addAll(lstData);
-                                            lstData.clear();
-                                            lstData.addAll(listFeed.data);
-                                            isSearch = true;
-                                          }));
-                                }).catchError((onError) {
-                                  if (onError is DioError) {
-                                    DioError dioError = onError.error;
-                                    switch (dioError.type) {
-                                      case DioErrorType.CONNECT_TIMEOUT:
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scaffoldKey.currentState
-                                              .removeCurrentSnackBar();
-                                          _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      'Connection Timeout')));
-                                        });
+                                // dataForRequest['min'] = minMove;
+                                // dataForRequest['max'] = maxMove;
+                                // dataForRequest['totalData'] = null;
+                                // dataForRequest['pilihan'] = selectedSearch.id;
+                                // dataForRequest['konten'] =
+                                //     searchController.text;
+                                listBloc.add(FirstLoadSearchEvent(
+                                    widget.jobCd,
+                                    widget.strCd,
+                                    widget.empNo,
+                                    widget.corpFg,
+                                    minMove,
+                                    maxMove,
+                                    selectedSearch.id,
+                                    searchController.text));
 
-                                        break;
-                                      case DioErrorType.SEND_TIMEOUT:
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scaffoldKey.currentState
-                                              .removeCurrentSnackBar();
-                                          _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content:
-                                                      Text('Send Timeout')));
-                                        });
-
-                                        break;
-                                      case DioErrorType.RECEIVE_TIMEOUT:
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scaffoldKey.currentState
-                                              .removeCurrentSnackBar();
-                                          _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content:
-                                                      Text('Receive Timeout')));
-                                        });
-
-                                        break;
-                                      case DioErrorType.RESPONSE:
-                                        if (dioError.response
-                                            .toString()
-                                            .contains('Invalid Token')) {
-                                          WidgetsBinding.instance
-                                              .addPostFrameCallback((_) {
-                                            _scaffoldKey.currentState
-                                                .removeCurrentSnackBar();
-                                            _scaffoldKey.currentState
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Token Expired.... try Relogin'),
-                                                    action: SnackBarAction(
-                                                      label: 'Relogin',
-                                                      onPressed: () {
-                                                        Utils().logout(
-                                                            LoginPages(),
-                                                            context);
-                                                      },
-                                                    )));
-                                          });
-                                        } else {
-                                          WidgetsBinding.instance
-                                              .addPostFrameCallback((_) {
-                                            _scaffoldKey.currentState
-                                                .removeCurrentSnackBar();
-                                            _scaffoldKey.currentState
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Error ${dioError.response.toString()}')));
-                                          });
-                                        }
-
-                                        break;
-                                      case DioErrorType.CANCEL:
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scaffoldKey.currentState
-                                              .removeCurrentSnackBar();
-                                          _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      'Operation Cancelled')));
-                                        });
-
-                                        break;
-                                      case DioErrorType.DEFAULT:
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scaffoldKey.currentState
-                                              .removeCurrentSnackBar();
-                                          _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(
-                                                      'Failed host lookup, Please make sure you have used Lotte Connection')));
-                                        });
-
-                                        break;
-                                    }
-                                  } else {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      _scaffoldKey.currentState
-                                          .removeCurrentSnackBar();
-                                      _scaffoldKey.currentState.showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text(onError.toString())));
-                                    });
-                                  }
-                                }).whenComplete(() {
-                                  Navigator.pop(context);
-                                });
+                                Navigator.pop(context);
                               },
                               child: Text(
                                 'Search',
