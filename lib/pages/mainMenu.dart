@@ -8,13 +8,15 @@ import 'package:rounded_letter/rounded_letter.dart';
 import 'package:rounded_letter/shape_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'newUser/newUserMain.dart';
+
 class MainMenu extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _MainMenuState();
 }
 
 class _MainMenuState extends State<MainMenu> {
-  String name, corp, empId, jobCde, strCd, allCorp = "";
+  String name, corp, empId, jobCde, strCd, allCorp,directorat = "";
   Utils utils = Utils();
 
   Future _checkSession() async {
@@ -147,7 +149,16 @@ class _MainMenuState extends State<MainMenu> {
                 jobCd: jobCde,
                 empNo: empId,
               )),
-          _gridItem(Icons.fiber_new, 'New User', null),
+          _gridItem(
+              Icons.fiber_new,
+              'New User',
+              NewUserMain(
+                corpFg: corp,
+                strCd: strCd,
+                jobCd: jobCde,
+                empNo: empId,
+                directorat: directorat,
+              )),
           _gridItem(Icons.leak_add, 'Mutation', null),
           _gridItem(Icons.settings_power, 'Resignation', null),
           _gridItem(Icons.computer, 'IT Process', null),
@@ -169,11 +180,13 @@ class _MainMenuState extends State<MainMenu> {
               splashColor: Colors.blue[900], // inkwell color
               child: SizedBox(width: 44, height: 44, child: Icon(image)),
               onTap: () {
-                if (menuName == "List")
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => page));
-                else if (menuName == "Logout") {
-                  _logout(page);
+                if (page != null) {
+                  if (menuName == "Logout") {
+                    _logout(page);
+                  } else {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => page));
+                  }
                 } else {
                   showDialog(
                     context: context,
@@ -230,6 +243,7 @@ class _MainMenuState extends State<MainMenu> {
                 jobCde = data.data.getString('jobCd');
                 strCd = data.data.getString('strCd');
                 allCorp = data.data.getString('allCorp');
+                directorat = data.data.getString('directorat');
                 return ListView(
                   children: <Widget>[_top(), _middle()],
                 );

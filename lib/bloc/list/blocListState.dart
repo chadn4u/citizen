@@ -1,5 +1,6 @@
 
 import 'package:citizens/models/responseDio/responseDio.dart';
+import 'package:dio/dio.dart';
 
 abstract class ListState{}
 
@@ -21,6 +22,11 @@ class ListFetchedSearchState extends ListState{
   ListFetchedSearchState(this.responsedio);
 }
 
-class ListErrorState extends ListState{}
+class ListErrorState extends ListState{
+  final DioError dioError;
+
+  ListErrorState(this.dioError);
+
+}
 
 class ListEmptyState extends ListState{}

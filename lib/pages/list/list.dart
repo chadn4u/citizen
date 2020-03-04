@@ -1,4 +1,4 @@
-import 'package:citizens/api/apiRepository.dart';
+
 import 'package:citizens/bloc/list/blocList.dart';
 import 'package:citizens/bloc/list/blocListEvents.dart';
 import 'package:citizens/bloc/list/blocListState.dart';
@@ -9,7 +9,6 @@ import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
@@ -163,15 +162,15 @@ class _ListDataState extends State<ListData> {
               } else {
                 isLoading = true;
                 listBloc.add(LoadMoreSearchEvent(
-                                    widget.jobCd,
-                                    widget.strCd,
-                                    widget.empNo,
-                                    widget.corpFg,
-                                    minMove,
-                                    maxMove,
-                                    totalData,
-                                    selectedSearch.id,
-                                    searchController.text));
+                    widget.jobCd,
+                    widget.strCd,
+                    widget.empNo,
+                    widget.corpFg,
+                    minMove,
+                    maxMove,
+                    totalData,
+                    selectedSearch.id,
+                    searchController.text));
               }
             } else {
               _scaffoldKey.currentState.removeCurrentSnackBar();
@@ -230,7 +229,77 @@ class _ListDataState extends State<ListData> {
           } else if (state is ListEmptyState) {
             return Center(child: Text('No Data Found'));
           } else if (state is ListErrorState) {
-            return Center(child: Text('Error'));
+            final stateError = state as ListErrorState;
+            DioError dioError = stateError.dioError;
+            switch (dioError.type) {
+              case DioErrorType.CONNECT_TIMEOUT:
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(
+                      SnackBar(content: Text('Connection Timeout')));
+                });
+
+                break;
+              case DioErrorType.SEND_TIMEOUT:
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState
+                      .showSnackBar(SnackBar(content: Text('Send Timeout')));
+                });
+
+                break;
+              case DioErrorType.RECEIVE_TIMEOUT:
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState
+                      .showSnackBar(SnackBar(content: Text('Receive Timeout')));
+                });
+
+                break;
+              case DioErrorType.RESPONSE:
+                if (dioError.response.toString().contains('Invalid Token')) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scaffoldKey.currentState.removeCurrentSnackBar();
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text('Token Expired.... try Relogin'),
+                        action: SnackBarAction(
+                          label: 'Relogin',
+                          onPressed: () {
+                            Utils().logout(LoginPages(), context);
+                          },
+                        )));
+                  });
+                } else {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scaffoldKey.currentState.removeCurrentSnackBar();
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content:
+                            Text('Error ${dioError.response.toString()}')));
+                  });
+                }
+
+                break;
+              case DioErrorType.CANCEL:
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(
+                      SnackBar(content: Text('Operation Cancelled')));
+                });
+
+                break;
+              case DioErrorType.DEFAULT:
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scaffoldKey.currentState.removeCurrentSnackBar();
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      content: Text(
+                          'Failed host lookup, Please make sure you have used Lotte Connection')));
+                });
+
+                break;
+            }
+            return Center(
+              child: Text(dioError.response.toString()),
+            );
           } else {
             isLoading = false;
             if (state is ListFetchedState) {

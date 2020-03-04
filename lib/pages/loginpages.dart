@@ -33,6 +33,7 @@ class LoginPagesState extends State<LoginPages> {
           session.addToString('strCd', modelLoginFeed.data[0].strCd);
           session.addToString('corpFg', modelLoginFeed.data[0].corpFg);
           session.addToString('allCorp', modelLoginFeed.data[0].allCorp);
+          session.addToString('directorat', modelLoginFeed.data[0].directorat);
         } else {
           ErrorResponse errorResponse = value.data;
           _scaffoldKey.currentState.removeCurrentSnackBar();

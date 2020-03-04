@@ -34,8 +34,8 @@ class ListBloc extends Bloc<UserEvents, ListState> {
         _dataForRequest['totalData'] = null;
 
         responseDio = await _apiRepository.getListRepo(_dataForRequest);
-      } catch (_) {
-        yield ListErrorState();
+      } catch (e) {
+        yield ListErrorState(e);
       }
     } else if (event is FirstLoadSearchEvent) {
       isSearch = true;
@@ -50,8 +50,8 @@ class ListBloc extends Bloc<UserEvents, ListState> {
         _dataForRequest['konten'] = event.konten;
 
         responseDio = await _apiRepository.getListSearchRepo(_dataForRequest);
-      } catch (_) {
-        yield ListErrorState();
+      } catch (e) {
+        yield ListErrorState(e);
       }
     } else if (event is LoadMoreEvent) {
       try {
@@ -64,8 +64,8 @@ class ListBloc extends Bloc<UserEvents, ListState> {
         _dataForRequest['totalData'] = event.totalData;
 
         responseDio = await _apiRepository.getListRepo(_dataForRequest);
-      } catch (_) {
-        yield ListErrorState();
+      } catch (e) {
+        yield ListErrorState(e);
       }
     } else if (event is LoadMoreSearchEvent) {
       isSearch = true;
@@ -81,8 +81,8 @@ class ListBloc extends Bloc<UserEvents, ListState> {
         _dataForRequest['totalData'] = event.totalData;
 
         responseDio = await _apiRepository.getListSearchRepo(_dataForRequest);
-      } catch (_) {
-        yield ListErrorState();
+      } catch (e) {
+        yield ListErrorState(e);
       }
     }
 

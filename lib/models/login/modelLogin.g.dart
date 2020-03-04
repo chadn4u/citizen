@@ -14,6 +14,7 @@ ModelLogin _$ModelLoginFromJson(Map<String, dynamic> json) {
     json['STR_CD'] as String,
     json['CORP_FG'] as String,
     json['ALL_CORP'] as String,
+    json['DIRECTORAT'] as String,
   );
 }
 
@@ -25,4 +26,5 @@ Map<String, dynamic> _$ModelLoginToJson(ModelLogin instance) =>
       'STR_CD': instance.strCd,
       'CORP_FG': instance.corpFg,
       'ALL_CORP': instance.allCorp,
+      'DIRECTORAT': instance.directorat,
     };

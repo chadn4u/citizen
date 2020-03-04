@@ -21,13 +21,16 @@ class ModelLogin{
 
   @JsonKey(name: "ALL_CORP")
   final String allCorp;
+
+   @JsonKey(name: "DIRECTORAT")
+  final String directorat;
   
 
-  ModelLogin(this.empNo, this.empNm, this.jobCd, this.strCd, this.corpFg,this.allCorp);
+  ModelLogin(this.empNo, this.empNm, this.jobCd, this.strCd, this.corpFg,this.allCorp,this.directorat);
 
   @override
   String toString() {
-    return 'ModelLogin{empNo: $empNo, empNm: $empNm,jobCd: $jobCd, strCd: $strCd,corpFg: $corpFg}';
+    return 'ModelLogin{empNo: $empNo, empNm: $empNm,jobCd: $jobCd, strCd: $strCd,corpFg: $corpFg,directorat:$directorat}';
   }
 
   factory ModelLogin.from(Map<String,dynamic> json) => _$ModelLoginFromJson(json);
