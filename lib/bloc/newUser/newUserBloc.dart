@@ -18,7 +18,7 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
   @override
   Stream<NewUserState> mapEventToState(NewUserEvents event) async* {
     ResponseDio responseDio;
-    // yield ListFetchingState();
+     //yield NewUserFetching();
     if (event is FirstLoadEvent) {
       try {
         _dataForRequest['jobCd'] = event.jobCd;
@@ -35,19 +35,20 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
         yield NewUserError(e);
       }
     } else if (event is LoadMoreEvent) {
-      // try {
-      //   _dataForRequest['jobCd'] = event.jobCd;
-      //   _dataForRequest['strCd'] = event.strCd;
-      //   _dataForRequest['empNo'] = event.empNo;
-      //   _dataForRequest['corpFg'] = event.corpFg;
-      //   _dataForRequest['min'] = event.min;
-      //   _dataForRequest['max'] = event.max;
-      //   _dataForRequest['totalData'] = event.totalData;
+      try {
+        _dataForRequest['jobCd'] = event.jobCd;
+        _dataForRequest['strCd'] = event.strCd;
+        _dataForRequest['empNo'] = event.empNo;
+        _dataForRequest['corpFg'] = event.corpFg;
+        _dataForRequest['directorat'] = event.directorat;
+        _dataForRequest['min'] = event.min;
+        _dataForRequest['max'] = event.max;
+        _dataForRequest['totalData'] = event.totalData;
 
-      //   responseDio = await _apiRepository.getListRepo(_dataForRequest);
-      // } catch (e) {
-      //   yield ListErrorState(e);
-      // }
+        responseDio = await _apiRepository.getNewUserRepo(_dataForRequest);
+      } catch (e) {
+        yield NewUserError(e);
+      }
     }
 
     if (responseDio != null) {

@@ -157,7 +157,6 @@ class ApiProvider {
       //print(responseDio.toString());
       return responseDio;
     } on http_dio.DioError catch (e) {
-      print(e.response.data);
       throw (e);
     }
   }
@@ -176,7 +175,7 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   //dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
       response = await dio.get('http://frontier.lottemart.co.id/Citizen/newUser',

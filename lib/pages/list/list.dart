@@ -1,4 +1,3 @@
-
 import 'package:citizens/bloc/list/blocList.dart';
 import 'package:citizens/bloc/list/blocListEvents.dart';
 import 'package:citizens/bloc/list/blocListState.dart';
@@ -310,12 +309,16 @@ class _ListDataState extends State<ListData> {
             ResponseDio responseDio = stateAsListFetched.responsedio;
             ListFeed listFeed = responseDio.data;
             //dataForRequest['totalData'] = listFeed.totalData;
-            minMove = initialMin;
-            maxMove = initialMax;
-            totalData = int.parse(listFeed.totalData);
-            if (!isSearch)
+
+            if (totalData == null) {
+              minMove = initialMin;
+              maxMove = initialMax;
+            }
+
+            if (!isSearch) {
+              totalData = int.parse(listFeed.totalData);
               lstData.addAll(listFeed.data);
-            else {
+            } else {
               totalDataTemp = totalData;
               totalData = int.parse(listFeed.totalData);
 
@@ -509,6 +512,7 @@ class _ListDataState extends State<ListData> {
                                 maxMoveTemp = maxMove;
                                 minMove = initialMin;
                                 maxMove = initialMax;
+                                totalData = null;
                                 // dataForRequest['min'] = minMove;
                                 // dataForRequest['max'] = maxMove;
                                 // dataForRequest['totalData'] = null;
