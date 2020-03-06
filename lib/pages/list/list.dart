@@ -228,7 +228,7 @@ class _ListDataState extends State<ListData> {
           } else if (state is ListEmptyState) {
             return Center(child: Text('No Data Found'));
           } else if (state is ListErrorState) {
-            final stateError = state as ListErrorState;
+            final stateError = state;
             DioError dioError = stateError.dioError;
             switch (dioError.type) {
               case DioErrorType.CONNECT_TIMEOUT:
@@ -302,7 +302,7 @@ class _ListDataState extends State<ListData> {
           } else {
             isLoading = false;
             if (state is ListFetchedState) {
-              stateAsListFetched = state as ListFetchedState;
+              stateAsListFetched = state;
             } else {
               stateAsListFetched = state as ListFetchedSearchState;
             }

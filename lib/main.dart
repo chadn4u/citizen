@@ -1,6 +1,5 @@
 import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/pages/mainMenu.dart';
-import 'package:citizens/utils/session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +11,7 @@ void main() async{
 
   SharedPreferences pref = await SharedPreferences.getInstance();
   // Get result of the login function.
-  String _result = pref.getString('empNo');;
+  String _result = pref.getString('empNo');
   if (_result != null) {
     _defaultHome = MainMenu();
   }

@@ -5,13 +5,13 @@ import 'package:citizens/models/newUser/newUser.dart';
 import 'package:citizens/models/newUser/newUserFeed.dart';
 import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/utils/mainUtils.dart';
+import 'package:citizens/widget/newUser/modalBottom.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rounded_letter/rounded_letter.dart';
 import 'package:rounded_letter/shape_type.dart';
-import 'package:snapping_sheet/snapping_sheet.dart';
 
 import '../loginpages.dart';
 
@@ -35,13 +35,12 @@ class NewUserMain extends StatefulWidget {
 }
 
 class _NewUserMainState extends State<NewUserMain> {
-  List<Widget> _listWidget = [];
   final List<NewUser> newUser = [];
   final List<NewUser> newUserSearch = [];
   final List<NewUser> newUserTemp = [];
   final int initialMin = 0;
   final int initialMax = 20;
-  final TextEditingController employeeNo = TextEditingController();
+  
   int minMove;
   int maxMove;
   int minMoveTemp;
@@ -56,13 +55,7 @@ class _NewUserMainState extends State<NewUserMain> {
   ScrollController scrollController = new ScrollController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  bool sap = false;
-  bool gmd = false;
-  bool b2b = false;
-  bool inet = false;
-  bool email = false;
-  bool wifi = false;
-  bool mEmail = false;
+ 
   TabBar _tabBar = TabBar(
     tabs: <Widget>[
       Tab(
@@ -173,7 +166,7 @@ class _NewUserMainState extends State<NewUserMain> {
                     return Center(child: Text('No Data Found'));
                   } else if (state is NewUserError) {
                     pr.hide();
-                    final stateError = state as NewUserError;
+                    final stateError = state ;
                     DioError dioError = stateError.dioError;
                     switch (dioError.type) {
                       case DioErrorType.CONNECT_TIMEOUT:
@@ -308,247 +301,15 @@ class _NewUserMainState extends State<NewUserMain> {
     );
   }
 
-  //input widget
-  Widget _input(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: TextField(
-        decoration:
-            InputDecoration(labelText: label, hoverColor: Colors.blue[900]),
-        controller: controller,
-        //  controller: amountController,
-        //  onSubmitted: (_) => submitData(),
-      ),
-    );
-  }
+  
 
   _showBottomSheet() {
     _scaffoldKey.currentState
         .showBottomSheet<void>((BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext ctx, StateSetter state) {
-            return DecoratedBox(
-              decoration: BoxDecoration(color: Colors.transparent),
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                child: SingleChildScrollView(
-                  child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(28),
-                            topRight: Radius.circular(28)),
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: <Widget>[
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      color: Colors.grey,
-                                    ),
-                                    child: Icon(Icons.close),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  'ADD',
-                                  style: TextStyle(color: Colors.blue[900]),
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Column(
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  _input('Employee No', employeeNo),
-                                  _input('Employee Name', employeeNo),
-                                  SizedBox(
-                                    height: 14,
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Request Application :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      _checkbox('SAP', sap, state),
-                                      _checkbox('GMD', gmd, state),
-                                      _checkbox('B2B', b2b, state),
-                                      _checkbox('INTERNET', inet, state),
-                                      _checkbox('Email', email, state),
-                                      _checkbox('Wi-Fi', wifi, state),
-                                      _checkbox('Mobile Email', mEmail, state),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 14,
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Division :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Division :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Division :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Division :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text('Division :',
-                                              style: TextStyle(
-                                                  color: Colors.blue[900])),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          )
-                        ],
-                      )),
-                ),
-              ),
-            );
-          });
+          return NewUserBottom();
         })
         .closed
         .whenComplete(() {});
-  }
-
-  Widget _checkbox(String title, bool boolValue, StateSetter state) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          title,
-          style: TextStyle(fontSize: 10),
-        ),
-        Checkbox(
-          value: boolValue,
-          onChanged: (bool value) {
-            state(() {
-              switch (title) {
-                case 'SAP':
-                  sap = value;
-                  break;
-                case 'GMD':
-                  gmd = value;
-                  break;
-                case 'B2B':
-                  b2b = value;
-                  break;
-                case 'INTERNET':
-                  inet = value;
-                  break;
-                case 'Email':
-                  email = value;
-                  break;
-                case 'Wi-Fi':
-                  wifi = value;
-                  break;
-                case 'Mobile Email':
-                  mEmail = value;
-                  break;
-              }
-            });
-          },
-        )
-      ],
-    );
   }
 
   Widget _buildListItem(int idx) {
