@@ -18,8 +18,10 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
   @override
   Stream<NewUserState> mapEventToState(NewUserEvents event) async* {
     ResponseDio responseDio;
+    bool isRefresh;
      //yield NewUserFetching();
     if (event is FirstLoadEvent) {
+      isRefresh = false;
       try {
         _dataForRequest['jobCd'] = event.jobCd;
         _dataForRequest['strCd'] = event.strCd;
@@ -31,6 +33,7 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
         _dataForRequest['totalData'] = null;
 
         responseDio = await _apiRepository.getNewUserRepo(_dataForRequest);
+        isRefresh = false;
       } catch (e) {
         yield NewUserError(e);
       }
@@ -46,13 +49,30 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
         _dataForRequest['totalData'] = event.totalData;
 
         responseDio = await _apiRepository.getNewUserRepo(_dataForRequest);
+        isRefresh = false;
+      } catch (e) {
+        yield NewUserError(e);
+      }
+    }else if(event is RefreshEvent) {
+      try {
+        _dataForRequest['jobCd'] = event.jobCd;
+        _dataForRequest['strCd'] = event.strCd;
+        _dataForRequest['empNo'] = event.empNo;
+        _dataForRequest['corpFg'] = event.corpFg;
+        _dataForRequest['directorat'] = event.directorat;
+        _dataForRequest['min'] = event.min;
+        _dataForRequest['max'] = event.max;
+        _dataForRequest['totalData'] = event.totalData;
+
+        responseDio = await _apiRepository.getNewUserRepo(_dataForRequest);
+        isRefresh = true;
       } catch (e) {
         yield NewUserError(e);
       }
     }
 
     if (responseDio != null) {
-      yield NewUserFetched(responseDio);
+      yield NewUserFetched(responseDio,isRefresh);
     } else {
       NewUserEmpty();
     }

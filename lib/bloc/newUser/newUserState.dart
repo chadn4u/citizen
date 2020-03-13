@@ -6,8 +6,9 @@ abstract class NewUserState{}
 
 class NewUserFetched extends NewUserState{
   final ResponseDio responsedio;
+  final bool refresh;
 
-  NewUserFetched(this.responsedio);
+  NewUserFetched(this.responsedio, this.refresh);
 }
 class NewUserFetching extends NewUserState{}
 class NewUserError extends NewUserState{

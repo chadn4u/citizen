@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import '../loginpages.dart';
 
@@ -216,6 +217,9 @@ class _ListDataState extends State<ListData> {
 
   @override
   Widget build(BuildContext context) {
+    ProgressDialog pr =
+        ProgressDialog(context, isDismissible: true, showLogs: true);
+    pr.style(message: 'Please Wait...');
     FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
     return BlocProvider(
       create: (BuildContext context) => listBloc,
@@ -224,78 +228,18 @@ class _ListDataState extends State<ListData> {
         extendBody: true,
         body: BlocBuilder<ListBloc, ListState>(builder: (ctx, state) {
           if (state is ListUninitializedState) {
+            Future.microtask(() async => await pr.show());
             return Center(child: Text('Uninitialized State'));
           } else if (state is ListEmptyState) {
             return Center(child: Text('No Data Found'));
           } else if (state is ListErrorState) {
             final stateError = state;
             DioError dioError = stateError.dioError;
-            switch (dioError.type) {
-              case DioErrorType.CONNECT_TIMEOUT:
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scaffoldKey.currentState.removeCurrentSnackBar();
-                  _scaffoldKey.currentState.showSnackBar(
-                      SnackBar(content: Text('Connection Timeout')));
-                });
+            Utils().onError(_scaffoldKey, dioError, context);
+            Future.delayed(Duration(seconds: 1)).then((value) {
+              pr.hide();
+            });
 
-                break;
-              case DioErrorType.SEND_TIMEOUT:
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scaffoldKey.currentState.removeCurrentSnackBar();
-                  _scaffoldKey.currentState
-                      .showSnackBar(SnackBar(content: Text('Send Timeout')));
-                });
-
-                break;
-              case DioErrorType.RECEIVE_TIMEOUT:
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scaffoldKey.currentState.removeCurrentSnackBar();
-                  _scaffoldKey.currentState
-                      .showSnackBar(SnackBar(content: Text('Receive Timeout')));
-                });
-
-                break;
-              case DioErrorType.RESPONSE:
-                if (dioError.response.toString().contains('Invalid Token')) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _scaffoldKey.currentState.removeCurrentSnackBar();
-                    _scaffoldKey.currentState.showSnackBar(SnackBar(
-                        content: Text('Token Expired.... try Relogin'),
-                        action: SnackBarAction(
-                          label: 'Relogin',
-                          onPressed: () {
-                            Utils().logout(LoginPages(), context);
-                          },
-                        )));
-                  });
-                } else {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _scaffoldKey.currentState.removeCurrentSnackBar();
-                    _scaffoldKey.currentState.showSnackBar(SnackBar(
-                        content:
-                            Text('Error ${dioError.response.toString()}')));
-                  });
-                }
-
-                break;
-              case DioErrorType.CANCEL:
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scaffoldKey.currentState.removeCurrentSnackBar();
-                  _scaffoldKey.currentState.showSnackBar(
-                      SnackBar(content: Text('Operation Cancelled')));
-                });
-
-                break;
-              case DioErrorType.DEFAULT:
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scaffoldKey.currentState.removeCurrentSnackBar();
-                  _scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text(
-                          'Failed host lookup, Please make sure you have used Lotte Connection')));
-                });
-
-                break;
-            }
             return Center(
               child: Text(dioError.response.toString()),
             );
@@ -309,7 +253,9 @@ class _ListDataState extends State<ListData> {
             ResponseDio responseDio = stateAsListFetched.responsedio;
             ListFeed listFeed = responseDio.data;
             //dataForRequest['totalData'] = listFeed.totalData;
-
+            Future.delayed(Duration(seconds: 1)).then((value) {
+                      pr.hide();
+                    });
             if (totalData == null) {
               minMove = initialMin;
               maxMove = initialMax;

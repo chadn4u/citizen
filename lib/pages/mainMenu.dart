@@ -158,6 +158,7 @@ class _MainMenuState extends State<MainMenu> {
                 jobCd: jobCde,
                 empNo: empId,
                 directorat: directorat,
+                allCorp:allCorp
               )),
           _gridItem(Icons.leak_add, 'Mutation', null),
           _gridItem(Icons.settings_power, 'Resignation', null),

@@ -13,13 +13,13 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:rounded_letter/rounded_letter.dart';
 import 'package:rounded_letter/shape_type.dart';
 
-import '../loginpages.dart';
 
 class NewUserMain extends StatefulWidget {
   final String jobCd;
   final String strCd;
   final String empNo;
   final String corpFg;
+  final String allCorp;
   final String directorat;
 
   const NewUserMain(
@@ -28,7 +28,7 @@ class NewUserMain extends StatefulWidget {
       this.strCd,
       this.empNo,
       this.corpFg,
-      this.directorat})
+      this.directorat, this.allCorp})
       : super(key: key);
   @override
   _NewUserMainState createState() => _NewUserMainState();
@@ -40,7 +40,7 @@ class _NewUserMainState extends State<NewUserMain> {
   final List<NewUser> newUserTemp = [];
   final int initialMin = 0;
   final int initialMax = 20;
-  
+
   int minMove;
   int maxMove;
   int minMoveTemp;
@@ -55,7 +55,6 @@ class _NewUserMainState extends State<NewUserMain> {
   ScrollController scrollController = new ScrollController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
- 
   TabBar _tabBar = TabBar(
     tabs: <Widget>[
       Tab(
@@ -165,84 +164,24 @@ class _NewUserMainState extends State<NewUserMain> {
                   } else if (state is NewUserEmpty) {
                     return Center(child: Text('No Data Found'));
                   } else if (state is NewUserError) {
-                    pr.hide();
-                    final stateError = state ;
+                    
+                    final stateError = state;
                     DioError dioError = stateError.dioError;
-                    switch (dioError.type) {
-                      case DioErrorType.CONNECT_TIMEOUT:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scaffoldKey.currentState.removeCurrentSnackBar();
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Connection Timeout')));
-                        });
-
-                        break;
-                      case DioErrorType.SEND_TIMEOUT:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scaffoldKey.currentState.removeCurrentSnackBar();
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Send Timeout')));
-                        });
-
-                        break;
-                      case DioErrorType.RECEIVE_TIMEOUT:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scaffoldKey.currentState.removeCurrentSnackBar();
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Receive Timeout')));
-                        });
-
-                        break;
-                      case DioErrorType.RESPONSE:
-                        if (dioError.response
-                            .toString()
-                            .contains('Invalid Token')) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            _scaffoldKey.currentState.removeCurrentSnackBar();
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                content: Text('Token Expired.... try Relogin'),
-                                action: SnackBarAction(
-                                  label: 'Relogin',
-                                  onPressed: () {
-                                    Utils().logout(LoginPages(), context);
-                                  },
-                                )));
-                          });
-                        } else {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            _scaffoldKey.currentState.removeCurrentSnackBar();
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                content: Text(
-                                    'Error ${dioError.response.toString()}')));
-                          });
-                        }
-
-                        break;
-                      case DioErrorType.CANCEL:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scaffoldKey.currentState.removeCurrentSnackBar();
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Operation Cancelled')));
-                        });
-
-                        break;
-                      case DioErrorType.DEFAULT:
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _scaffoldKey.currentState.removeCurrentSnackBar();
-                          _scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text(
-                                  'Failed host lookup, Please make sure you have used Lotte Connection')));
-                        });
-
-                        break;
-                    }
+                    Utils().onError(_scaffoldKey, dioError, context);
+                    Future.delayed(Duration(seconds: 1)).then((value) {
+                      pr.hide();
+                    });
+                    
                     return Center(
                       child: Text(dioError.response.toString()),
                     );
+                    
                   } else {
                     isLoading = false;
                     isEndOfResult = false;
-                    pr.hide();
+                    Future.delayed(Duration(seconds: 1)).then((value) {
+                      pr.hide();
+                    });
                     final stateAsListFetched = state as NewUserFetched;
 
                     ResponseDio responseDio = stateAsListFetched.responsedio;
@@ -251,11 +190,12 @@ class _NewUserMainState extends State<NewUserMain> {
                       minMove = initialMin;
                       maxMove = initialMax;
                     }
-
                     totalData = int.parse(newUserFeed.totalData);
-                    if (!isSearch)
+                    if (!isSearch) {
+                      if (stateAsListFetched.refresh) newUser.clear();
+
                       newUser.addAll(newUserFeed.data);
-                    else {
+                    } else {
                       totalDataTemp = totalData;
                       totalData = int.parse(newUserFeed.totalData);
 
@@ -301,12 +241,22 @@ class _NewUserMainState extends State<NewUserMain> {
     );
   }
 
-  
-
-  _showBottomSheet() {
+  _showBottomSheet(int idx) {
     _scaffoldKey.currentState
         .showBottomSheet<void>((BuildContext context) {
-          return NewUserBottom();
+          return NewUserBottom(
+            corpFg: widget.corpFg,
+            strCd: widget.strCd,
+            jobCd: widget.jobCd,
+            directorat: widget.directorat,
+            empNo: widget.empNo,
+            totalData: totalData,
+            allCorp: widget.allCorp,
+            maxMove: maxMove,
+            doj: newUser[idx].doj,
+            empNm: newUser[idx].empNm,
+            level: newUser[idx].levelEmp,
+          );
         })
         .closed
         .whenComplete(() {});
@@ -315,7 +265,7 @@ class _NewUserMainState extends State<NewUserMain> {
   Widget _buildListItem(int idx) {
     return InkWell(
       onTap: () {
-        _showBottomSheet();
+        _showBottomSheet(idx);
       },
       child: Container(
         height: 10,
