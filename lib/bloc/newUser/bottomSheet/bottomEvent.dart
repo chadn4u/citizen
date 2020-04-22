@@ -17,3 +17,23 @@ class GetStoreEvent extends BottomEvent{
 
 
 }
+
+class SubmitUser extends BottomEvent{
+  final String empNoReq;
+  final String empNo;
+  final String empNm;
+  final String jobCd;
+  final String strCd;
+  final String empId;
+  final String emailFg;
+  final String sapFg;
+  final String b2bFg;
+  final String netFg;
+  final String gmdFg;
+  final String wifiFg;
+  final String corpFg;
+  final String mobileFg;
+
+  SubmitUser(this.empNoReq, this.empNo, this.empNm, this.jobCd, this.strCd, this.empId, this.emailFg, this.sapFg, this.b2bFg, this.netFg, this.gmdFg, this.wifiFg, this.corpFg, this.mobileFg);
+
+}

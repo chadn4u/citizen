@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -142,7 +143,7 @@ class Utils {
                 action: SnackBarAction(
                   label: 'Relogin',
                   onPressed: () {
-                    Utils().logout(LoginPages(), context);
+                    Utils().logout(LoginScreen(), context);
                   },
                 )));
           });

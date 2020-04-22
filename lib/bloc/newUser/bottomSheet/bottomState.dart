@@ -26,3 +26,9 @@ class DataFetchedStores extends BottomState{
 
   DataFetchedStores(this.responsedio);
 }
+
+class SubmitPostUser extends BottomState{
+  final ResponseDio responsedio;
+
+  SubmitPostUser(this.responsedio);
+}

@@ -13,4 +13,8 @@ class ApiRepository{
   Future<ResponseDio> getNewUserRepo(Map<String, dynamic> data)async => await apiProvider.getNewUser(data);
   Future<ResponseDio> getDivisionRepo(Map<String, dynamic> data)async => await apiProvider.getDivision(data);
   Future<ResponseDio> getStoreRepo(Map<String, dynamic> data)async => await apiProvider.getStores(data);
+  Future<ResponseDio> postUserRepo(Map<String, dynamic> data)async => await apiProvider.postUser(data);
+  Future<ResponseDio> checkUpdateRepo(Map<String, dynamic> data)async => await apiProvider.checkUpdate(data);
+  Future<ResponseDio> getRequestStatusRepo(Map<String, dynamic> data)async => await apiProvider.getRequestStatus(data);
+  Future<ResponseDio> getSearchUserRepo(Map<String, dynamic> data)async => await apiProvider.getSearchUser(data);
 }

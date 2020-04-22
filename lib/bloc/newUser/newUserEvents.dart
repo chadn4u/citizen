@@ -36,6 +36,7 @@ class RefreshEvent extends NewUserEvents {
   final int min;
   final int max;
   final int totalData;
+  final bool submitResult;
 
-  RefreshEvent(this.jobCd, this.strCd, this.empNo, this.corpFg, this.directorat, this.min, this.max, this.totalData);
+  RefreshEvent(this.jobCd, this.strCd, this.empNo, this.corpFg, this.directorat, this.min, this.max, this.totalData, this.submitResult);
 }

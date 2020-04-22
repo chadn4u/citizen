@@ -1,5 +1,4 @@
 
-import 'package:citizens/models/newUser/division.dart';
 import 'package:citizens/models/newUser/store.dart';
 import 'package:json_annotation/json_annotation.dart';
 

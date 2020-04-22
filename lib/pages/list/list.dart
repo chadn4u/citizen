@@ -5,6 +5,8 @@ import 'package:citizens/models/list/ListData.dart';
 import 'package:citizens/models/list/listFeed.dart';
 import 'package:citizens/models/list/searchList.dart';
 import 'package:citizens/models/responseDio/responseDio.dart';
+import 'package:citizens/utils/colors.dart';
+import 'package:citizens/utils/extensions.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
-import '../loginpages.dart';
+
 
 class ListData extends StatefulWidget {
   final String jobCd;
@@ -83,9 +85,9 @@ class _ListDataState extends State<ListData> {
             borderRadius: BorderRadius.all(Radius.circular(5)),
             boxShadow: [
               BoxShadow(
-                  color: Colors.blue[900],
-                  blurRadius: 20,
-                  offset: Offset(0, 10))
+                  color: colorPrimary,
+                  blurRadius: 1,
+                  offset: Offset(0, 1))
             ]),
         child: ListTile(
           leading: Container(
@@ -94,14 +96,14 @@ class _ListDataState extends State<ListData> {
               children: <Widget>[
                 Text(
                   listDataModel.corpFg,
-                  style: TextStyle(color: Colors.blue, fontSize: 25),
+                  style: TextStyle(color: textColorPrimary, fontSize: 25),
                 ),
               ],
             ),
           ),
           title: Container(
             child: Text(listDataModel.empNm,
-                style: TextStyle(color: Colors.blue, fontSize: 22)),
+                style: TextStyle(color: textColorPrimary, fontSize: 22)),
           ),
           subtitle: Container(
             child: Row(
@@ -220,7 +222,7 @@ class _ListDataState extends State<ListData> {
     ProgressDialog pr =
         ProgressDialog(context, isDismissible: true, showLogs: true);
     pr.style(message: 'Please Wait...');
-    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    changeStatusColor(colorWhite);
     return BlocProvider(
       create: (BuildContext context) => listBloc,
       child: Scaffold(
@@ -276,7 +278,7 @@ class _ListDataState extends State<ListData> {
             return NotificationListener(
               onNotification: onNotification,
               child: Container(
-                color: Colors.blue[900],
+                color: layoutBackgroundWhite,
                 child: ListView.builder(
                     scrollDirection: Axis.vertical,
                     controller: scrollController,
@@ -339,7 +341,7 @@ class _ListDataState extends State<ListData> {
         bottomNavigationBar: Container(
           height: 55,
           child: BottomAppBar(
-            color: Colors.blue[900],
+            color: colorPrimary,
             shape: CircularNotchedRectangle(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -377,7 +379,7 @@ class _ListDataState extends State<ListData> {
                 _settingModalBottomSheet(context);
               }
             },
-            backgroundColor: Colors.blue[900],
+            backgroundColor: colorPrimary,
             child: Icon(
               isSearch ? Icons.close : Icons.search,
               color: Colors.white,
@@ -428,14 +430,14 @@ class _ListDataState extends State<ListData> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
                             borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
+                              color: colorPrimary,
                               width: 2,
                             ),
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
                             borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
+                              color: colorPrimary,
                               width: 3,
                             ),
                           ),
@@ -449,7 +451,7 @@ class _ListDataState extends State<ListData> {
                           decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(8)),
-                              color: Colors.blue[900]),
+                              color: colorPrimary),
                           width: double.infinity,
                           child: FlatButton(
                               onPressed: () {
@@ -459,12 +461,6 @@ class _ListDataState extends State<ListData> {
                                 minMove = initialMin;
                                 maxMove = initialMax;
                                 totalData = null;
-                                // dataForRequest['min'] = minMove;
-                                // dataForRequest['max'] = maxMove;
-                                // dataForRequest['totalData'] = null;
-                                // dataForRequest['pilihan'] = selectedSearch.id;
-                                // dataForRequest['konten'] =
-                                //     searchController.text;
                                 listBloc.add(FirstLoadSearchEvent(
                                     widget.jobCd,
                                     widget.strCd,

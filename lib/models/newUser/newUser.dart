@@ -16,19 +16,26 @@ class NewUser{
   @JsonKey(name :"DIRECTORAT")
   final String directorat;
 
-  
+  @JsonKey(name :"JOB_CD")
+  final String jobCd;
+
+  @JsonKey(name :"STR_CD")
+  final String strCd;
+
+  @JsonKey(name :"CORP_FG")
+  final String corpFg;
+
   @JsonKey(name :"LEVEL_EMP")
   final String levelEmp;
 
-  
   @JsonKey(name :"COMPID")
   final String compId;
 
-  NewUser(this.empNo, this.empNm, this.doj, this.directorat, this.levelEmp, this.compId);
+  NewUser(this.empNo, this.empNm, this.doj, this.directorat, this.levelEmp, this.compId, this.jobCd, this.strCd, this.corpFg);
 
    @override
   String toString() {
-    return 'NewUser{empNo: $empNo, empNm: $empNm,doj: $doj, directorat: $directorat,levelEmp: $levelEmp,compId:$compId}';
+    return 'NewUser{empNo: $empNo, empNm: $empNm,doj: $doj, directorat: $directorat,jobCd: $jobCd,levelEmp: $levelEmp,compId:$compId,strCd: $strCd,corpFg:$corpFg}';
   }
 
   factory NewUser.from(Map<String,dynamic> json) => _$NewUserFromJson(json);

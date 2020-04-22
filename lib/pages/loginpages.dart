@@ -8,6 +8,7 @@ import 'package:citizens/utils/mainUtils.dart';
 import 'package:citizens/utils/session.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 class LoginPages extends StatefulWidget {
@@ -19,6 +20,8 @@ class LoginPagesState extends State<LoginPages> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final idController = TextEditingController();
   final passwdController = TextEditingController();
+
+  PackageInfo packageInfo;
 
   void getLoginDetail(String id, String password, pr) {
     ApiRepository _apiRepository = ApiRepository();
@@ -100,9 +103,19 @@ class LoginPagesState extends State<LoginPages> {
       pr.hide().then((isHidden) {
         print(isHidden);
       });
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => MainMenu()));
     });
+  }
+
+  Future<String> getPackageinfo() async {
+    packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.buildNumber;
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -338,12 +351,12 @@ class LoginPagesState extends State<LoginPages> {
 
                                         break;
                                     }
-                                  }else{
+                                  } else {
                                     _scaffoldKey.currentState
-                                            .removeCurrentSnackBar();
-                                        _scaffoldKey.currentState.showSnackBar(
-                                            SnackBar(
-                                                content: Text(onerror.toString())));
+                                        .removeCurrentSnackBar();
+                                    _scaffoldKey.currentState.showSnackBar(
+                                        SnackBar(
+                                            content: Text(onerror.toString())));
                                   }
                                 }).whenComplete(() {});
                               }
@@ -361,7 +374,17 @@ class LoginPagesState extends State<LoginPages> {
                                     fontSize: 16, color: Colors.white),
                               )),
                             ),
-                          )
+                          ),
+                          FutureBuilder(
+                              future: getPackageinfo(),
+                              builder: (BuildContext context,
+                                      AsyncSnapshot<String> snapshot) =>
+                                  Text(
+                                    snapshot.hasData
+                                        ? "Version "+snapshot.data 
+                                        : "Loading ...",
+                                    style: TextStyle(color: Colors.black38),
+                                  ))
                         ],
                       ),
                     ),

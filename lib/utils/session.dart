@@ -7,7 +7,7 @@ class Session {
 
   addToString(String index, String value) async{
     prefs = await SharedPreferences.getInstance();
-    print('session nih yee $value');
+    print('session nih yee $index $value');
     prefs.setString(index, value);
   }
   addToInt(String index, int value) async{

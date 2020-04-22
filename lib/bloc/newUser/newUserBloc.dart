@@ -19,6 +19,7 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
   Stream<NewUserState> mapEventToState(NewUserEvents event) async* {
     ResponseDio responseDio;
     bool isRefresh;
+    bool submitResult = false;
      //yield NewUserFetching();
     if (event is FirstLoadEvent) {
       isRefresh = false;
@@ -63,6 +64,7 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
         _dataForRequest['min'] = event.min;
         _dataForRequest['max'] = event.max;
         _dataForRequest['totalData'] = event.totalData;
+        submitResult = event.submitResult;
 
         responseDio = await _apiRepository.getNewUserRepo(_dataForRequest);
         isRefresh = true;
@@ -72,7 +74,7 @@ class NewUserBloc extends Bloc<NewUserEvents, NewUserState> {
     }
 
     if (responseDio != null) {
-      yield NewUserFetched(responseDio,isRefresh);
+      yield NewUserFetched(responseDio,isRefresh,submitResult);
     } else {
       NewUserEmpty();
     }

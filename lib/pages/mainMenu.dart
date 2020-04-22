@@ -1,5 +1,6 @@
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/loginpages.dart';
+import 'package:citizens/pages/repairing/repairing.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -16,7 +17,7 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  String name, corp, empId, jobCde, strCd, allCorp,directorat = "";
+  String name, corp, empId, jobCde, strCd, allCorp, directorat = "";
   Utils utils = Utils();
 
   Future _checkSession() async {
@@ -126,7 +127,6 @@ class _MainMenuState extends State<MainMenu> {
 
   _middle() {
     return Container(
-      height: 300,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: Colors.blue[900],
@@ -136,37 +136,70 @@ class _MainMenuState extends State<MainMenu> {
           ]),
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.all(22),
-      child: GridView(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, childAspectRatio: 3 / 3),
-        children: <Widget>[
-          _gridItem(
-              Icons.list,
-              'List',
-              ListData(
-                corpFg: corp,
-                strCd: strCd,
-                jobCd: jobCde,
-                empNo: empId,
-              )),
-          _gridItem(
-              Icons.fiber_new,
-              'New User',
-              NewUserMain(
-                corpFg: corp,
-                strCd: strCd,
-                jobCd: jobCde,
-                empNo: empId,
-                directorat: directorat,
-                allCorp:allCorp
-              )),
-          _gridItem(Icons.leak_add, 'Mutation', null),
-          _gridItem(Icons.settings_power, 'Resignation', null),
-          _gridItem(Icons.computer, 'IT Process', null),
-          _gridItem(Icons.developer_mode, 'Repairing', null),
-          _gridItem(Icons.desktop_mac, 'Monitoring', null),
-          _gridItem(Icons.exit_to_app, 'Logout', LoginPages()),
-        ],
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _gridItem(
+                      Icons.list,
+                      'List',
+                      ListData(
+                        corpFg: corp,
+                        strCd: strCd,
+                        jobCd: jobCde,
+                        empNo: empId,
+                      )),
+                  _gridItem(
+                      Icons.fiber_new,
+                      'New User',
+                      NewUserMain(
+                          corpFg: corp,
+                          strCd: strCd,
+                          jobCd: jobCde,
+                          empNo: empId,
+                          directorat: directorat,
+                          allCorp: allCorp)),
+                  _gridItem(Icons.leak_add, 'Mutation', null),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _gridItem(Icons.settings_power, 'Resign', null),
+                  _gridItem(Icons.computer, 'IT Process', null),
+                  _gridItem(
+                      Icons.developer_mode,
+                      'Repairing',
+                      RepairingPages(
+                          corpFg: corp,
+                          strCd: strCd,
+                          jobCd: jobCde,
+                          empNo: empId,
+                          directorat: directorat,
+                          allCorp: allCorp)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _gridItem(Icons.desktop_mac, 'Monitoring', null),
+                  _gridItem(Icons.exit_to_app, 'Logout', LoginPages()),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
