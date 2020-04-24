@@ -92,7 +92,7 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   //dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    //dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
       response = await dio.get('http://frontier.lottemart.co.id/Citizen/list',
@@ -135,10 +135,11 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/listSearch',
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/listSearch',
           queryParameters: {
             "jobCd": data['jobCd'],
             "strCd": data['strCd'],
@@ -179,10 +180,11 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/newUser',
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/newUser',
           queryParameters: {
             "jobCd": data['jobCd'],
             "strCd": data['strCd'],
@@ -201,7 +203,7 @@ class ApiProvider {
         responseDio = ResponseDio(errorResponse,
             '${errorResponse.message} ,E ${response.statusCode}');
       }
-     // print(responseDio.toString());
+      // print(responseDio.toString());
       return responseDio;
     } on http_dio.DioError catch (e) {
       print(e.response.data);
@@ -223,14 +225,12 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/getDivision',
-          queryParameters: {
-            "jobCd": data['jobCd'],
-            "strCd": data['strCd']
-          });
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/getDivision',
+          queryParameters: {"jobCd": data['jobCd'], "strCd": data['strCd']});
 
       if (response.statusCode == 200) {
         responseDio = ResponseDio(DivisionFeed.from(response.data), 'Sukses');
@@ -239,7 +239,7 @@ class ApiProvider {
         responseDio = ResponseDio(errorResponse,
             '${errorResponse.message} ,E ${response.statusCode}');
       }
-     // print(responseDio.toString());
+      // print(responseDio.toString());
       return responseDio;
     } on http_dio.DioError catch (e) {
       print(e.response.data);
@@ -261,10 +261,11 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/getStores',
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/getStores',
           queryParameters: {
             "jobCd": data['jobCd'],
             "strCd": data['strCd'],
@@ -278,7 +279,7 @@ class ApiProvider {
         responseDio = ResponseDio(errorResponse,
             '${errorResponse.message} ,E ${response.statusCode}');
       }
-     // print(responseDio.toString());
+      // print(responseDio.toString());
       return responseDio;
     } on http_dio.DioError catch (e) {
       print(e.response.data);
@@ -298,8 +299,10 @@ class ApiProvider {
     dio.interceptors.add(http_dio.InterceptorsWrapper(
         onRequest: (http_dio.Options options) async {
       String token = await Session().getStringVal('access_token');
-      options.headers = {"Authorization": "Bearer $token",
-      "Content-Type": "application/x-www-form-urlencoded"};
+      options.headers = {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/x-www-form-urlencoded"
+      };
     }));
     // dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
     try {
@@ -318,7 +321,6 @@ class ApiProvider {
       return responseDio;
     } on http_dio.DioError catch (e) {
       throw (e);
-      
     }
   }
 
@@ -335,13 +337,14 @@ class ApiProvider {
         onRequest: (http_dio.Options options) async {
       options.headers = {"Content-Type": "application/x-www-form-urlencoded"};
     }));
-     dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
     try {
       response = await dio.post(
           'http://frontier.lottemart.co.id/administration/V2/apeka',
           data: http_dio.FormData.fromMap(data));
       if (response.statusCode == 200) {
-        responseDio = ResponseDio(CheckUpdateFeed.from(response.data), 'Sukses');
+        responseDio =
+            ResponseDio(CheckUpdateFeed.from(response.data), 'Sukses');
       } else {
         errorResponse = ErrorResponse.from(response.data);
         responseDio = ResponseDio(errorResponse,
@@ -352,7 +355,6 @@ class ApiProvider {
       return responseDio;
     } on http_dio.DioError catch (e) {
       throw (e);
-      
     }
   }
 
@@ -370,10 +372,11 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/getRequestStatus',
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/getRequestStatus',
           queryParameters: {
             "jobCd": data['jobCd'],
             "strCd": data['strCd'],
@@ -384,7 +387,8 @@ class ApiProvider {
           });
 
       if (response.statusCode == 200) {
-        responseDio = ResponseDio(RequestStatusFeed.from(response.data), 'Sukses');
+        responseDio =
+            ResponseDio(RequestStatusFeed.from(response.data), 'Sukses');
       } else {
         errorResponse = ErrorResponse.from(response.data);
         responseDio = ResponseDio(errorResponse,
@@ -411,10 +415,11 @@ class ApiProvider {
 
     ResponseDio responseDio;
     ErrorResponse errorResponse;
-   dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
 
     try {
-      response = await dio.get('http://frontier.lottemart.co.id/Citizen/getSearchUser',
+      response = await dio.get(
+          'http://frontier.lottemart.co.id/Citizen/getSearchUser',
           queryParameters: {
             "konten": data['konten'],
             "pilihan": data['pilihan'],
@@ -434,6 +439,77 @@ class ApiProvider {
     }
   }
 
+  Future<ResponseDio> postResetPassword(Map data) async {
+    http_dio.Dio dio = http_dio.Dio();
+    dio.options.connectTimeout = 5000;
+    dio.options.receiveTimeout = 5000;
+    http_dio.Response response;
+    //var head = {"Content-Type": "application/x-www-form-urlencoded"};
+    ResponseDio responseDio;
+    ErrorResponse errorResponse;
 
+    dio.interceptors.add(http_dio.InterceptorsWrapper(
+        onRequest: (http_dio.Options options) async {
+      String token = await Session().getStringVal('access_token');
+      options.headers = {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/x-www-form-urlencoded"
+      };
+    }));
+    // dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    try {
+      response = await dio.post(
+          'http://frontier.lottemart.co.id/Citizen/resetPassword',
+          data: http_dio.FormData.fromMap(data));
+      if (response.statusCode == 200) {
+        responseDio = ResponseDio(PostResponse.from(response.data), 'Sukses');
+      } else {
+        errorResponse = ErrorResponse.from(response.data);
+        responseDio = ResponseDio(errorResponse,
+            '${errorResponse.message} ,E ${response.statusCode}');
+      }
 
+      //print(responseDio);
+      return responseDio;
+    } on http_dio.DioError catch (e) {
+      throw (e);
+    }
+  }
+
+  Future<ResponseDio> postEnableUser(Map data) async {
+    http_dio.Dio dio = http_dio.Dio();
+    dio.options.connectTimeout = 5000;
+    dio.options.receiveTimeout = 5000;
+    http_dio.Response response;
+    //var head = {"Content-Type": "application/x-www-form-urlencoded"};
+    ResponseDio responseDio;
+    ErrorResponse errorResponse;
+
+    dio.interceptors.add(http_dio.InterceptorsWrapper(
+        onRequest: (http_dio.Options options) async {
+      String token = await Session().getStringVal('access_token');
+      options.headers = {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/x-www-form-urlencoded"
+      };
+    }));
+     dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    try {
+      response = await dio.post(
+          'http://frontier.lottemart.co.id/Citizen/enableUser',
+          data: http_dio.FormData.fromMap(data));
+      if (response.statusCode == 200) {
+        responseDio = ResponseDio(PostResponse.from(response.data), 'Sukses');
+      } else {
+        errorResponse = ErrorResponse.from(response.data);
+        responseDio = ResponseDio(errorResponse,
+            '${errorResponse.message} ,E ${response.statusCode}');
+      }
+
+      print(responseDio);
+      return responseDio;
+    } on http_dio.DioError catch (e) {
+      throw (e);
+    }
+  }
 }

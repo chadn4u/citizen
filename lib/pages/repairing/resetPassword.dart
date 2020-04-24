@@ -7,7 +7,10 @@ import 'package:citizens/models/repairing/resetPassword/searchListFeed.dart';
 import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/provider/resetPasswordProvider.dart';
 import 'package:citizens/utils/colors.dart';
+import 'package:citizens/utils/const.dart';
+import 'package:citizens/utils/extensions.dart';
 import 'package:citizens/utils/mainUtils.dart';
+import 'package:citizens/widget/newUser/button4.dart';
 import 'package:dio/dio.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -16,16 +19,24 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ResetPassword extends StatelessWidget {
+  final String empNo;
+
+  ResetPassword({Key key, this.empNo}) : super(key: key);
   TextEditingController searchController = TextEditingController();
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
-  ResetPasswordBloc resetPasswordBloc;
+    var _scaffoldKey = GlobalKey<ScaffoldState>();
+    ResetPasswordBloc resetPasswordBloc;
 
   @override
   Widget build(BuildContext context) {
+    
+
+
     resetPasswordBloc = ResetPasswordBloc();
     ProgressDialog pr =
         ProgressDialog(context, isDismissible: true, showLogs: true);
     pr.style(message: 'Please Wait...');
+
+
     return ChangeNotifierProvider<ResetPasswordProvider>(
       create: (context) => ResetPasswordProvider(),
       child: Scaffold(
@@ -253,7 +264,9 @@ class ResetPassword extends StatelessWidget {
                                     itemCount: searchListFeed.data.length,
                                     itemBuilder: (BuildContext ctx, int idx) {
                                       return _cardList(
-                                          context, searchListFeed.data[idx]);
+                                          context,
+                                          searchListFeed.data[idx],
+                                          responseDio);
                                     });
                               }
                             },
@@ -275,7 +288,8 @@ class ResetPassword extends StatelessWidget {
     );
   }
 
-  Widget _cardList(BuildContext context, SearchListReset data) {
+  Widget _cardList(
+      BuildContext context, SearchListReset data, ResponseDio responseDio) {
     return Container(
       padding: EdgeInsets.all(5),
       width: double.infinity,
@@ -293,35 +307,55 @@ class ResetPassword extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      'Reset Password',
-                      style: TextStyle(color: colorWhite),
-                    ),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                        color: colorPrimary),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    print('asdw');
+                MaterialButton(
+                  child: text('Reset Password',
+                      fontSize: textSizeLargeMedium,
+                      textColor: colorWhite,
+                      fontFamily: fontMedium),
+                  textColor: colorWhite,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0)),
+                  color: colorPrimary,
+                  onPressed: () {
+                    Future.delayed(const Duration(milliseconds: 500), () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => CustomDialog(
+                          textDialog: 'reset password',
+                          empNo: data.empNo,
+                          flagBloc: 0,
+                          responseDio: responseDio,
+                          empNoReq: empNo,
+                          resetPasswordBloc: resetPasswordBloc,
+                        ),
+                      );
+                    });
                   },
-                  child: Container(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        'Enable User',
-                        style: TextStyle(color: colorWhite),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                          color: colorPrimary)),
+                ),
+                MaterialButton(
+                  child: text('Enable User',
+                      fontSize: textSizeLargeMedium,
+                      textColor: colorWhite,
+                      fontFamily: fontMedium),
+                  textColor: colorWhite,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0)),
+                  color: colorPrimary,
+                  onPressed: () {
+                    Future.delayed(const Duration(milliseconds: 500), () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => CustomDialog(
+                          textDialog: 'enable user',
+                          empNo: data.empNo,
+                          flagBloc: 1,
+                          responseDio: responseDio,
+                          empNoReq: empNo,
+                          resetPasswordBloc: resetPasswordBloc,
+                        ),
+                      );
+                    });
+                  },
                 ),
               ],
             )
@@ -341,4 +375,89 @@ class ResetPassword extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(4))),
     );
   }
+}
+
+class CustomDialog extends StatelessWidget {
+  final String textDialog;
+  final String empNo;
+  final dynamic flagBloc;
+  final ResponseDio responseDio;
+  final String empNoReq;
+  final ResetPasswordBloc resetPasswordBloc;
+
+  const CustomDialog(
+      {Key key, this.textDialog, this.empNo, this.flagBloc, this.responseDio,this.empNoReq,this.resetPasswordBloc})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 0.0,
+      backgroundColor: Colors.transparent,
+      child: dialogContent(context, textDialog,empNo,flagBloc,responseDio,empNoReq,resetPasswordBloc),
+    );
+  }
+}
+
+dialogContent(BuildContext context, String textDialog,String empNo,dynamic flagBloc,
+ResponseDio responseDio,String empNoReq,ResetPasswordBloc resetPasswordBloc){
+  return Container(
+      decoration: new BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10.0,
+            offset: const Offset(0.0, 10.0),
+          ),
+        ],
+      ),
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // To make the card compact
+        children: <Widget>[
+          text("Are you sure you want to $textDialog?",
+              fontSize: textSizeLargeMedium,
+              maxLine: 2,
+              isCentered: true,
+              textColor: textColorPrimary,
+              fontFamily: fontSemibold),
+          SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              T4Button(
+                textContent: 'Submit',
+                onPressed: () {
+                  
+                  if(flagBloc == 0){
+                      resetPasswordBloc.add(ResetPasswordEvent(responseDio, empNo, empNoReq));
+                  }else if(flagBloc == 1){
+                    resetPasswordBloc.add(EnableUserEvent(responseDio, empNo, empNoReq));
+                  }
+                  else print(flagBloc);
+
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(
+                width: 24,
+              ),
+              T4Button(
+                textContent: 'Cancel',
+                isStroked: true,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+        ],
+      ));
 }

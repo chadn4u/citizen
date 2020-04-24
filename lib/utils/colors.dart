@@ -16,3 +16,7 @@ const cat3=Color(0XFFe43649);
 const cat4=Color(0XFFf4b428);
 const cat5=Color(0XFF22ce9a);
 const cat6=Color(0XFF203afb);
+const colorBgSettings = Color(0xFFf3f5f9);
+const colorSettings = Color(0xFFACB5FD);
+const colorArrowIconSettings=Color(0xFF747474);
+const colorSettingsView=Color(0xFFDADADA);

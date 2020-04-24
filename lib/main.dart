@@ -5,6 +5,7 @@ import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/pages/mainMenu.dart';
 import 'package:citizens/pages/updates/updatePages.dart';
+import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:package_info/package_info.dart';
@@ -64,7 +65,7 @@ void main() async {
       }
   });
 
-  FlutterStatusbarcolor.setStatusBarColor(Colors.blue[900]);
+  FlutterStatusbarcolor.setStatusBarColor(colorPrimary);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: 'Flutter Demo',
@@ -83,9 +84,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-          appBarTheme: AppBarTheme(color: Colors.blue[900]),
-          primarySwatch: Colors.blue[900],
-          primaryColor: Colors.blue[900]),
+          appBarTheme: AppBarTheme(color: colorPrimary),
+          primarySwatch: colorPrimary,
+          primaryColor: colorPrimary),
       home: LoginScreen(),
     );
   }

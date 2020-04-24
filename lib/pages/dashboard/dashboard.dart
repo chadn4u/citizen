@@ -1,6 +1,7 @@
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/newUser/newUserMain.dart';
+import 'package:citizens/settings/settingScreen.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:citizens/utils/extensions.dart';
@@ -19,7 +20,7 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  String name, corp, empId, jobCde, strCd, allCorp, directorat = "";
+  String name, corp, empId, jobCde, strCd, allCorp, directorat, passw = "";
   Utils utils = Utils();
 
   Future _checkSession() async {
@@ -55,9 +56,11 @@ class _DashBoardState extends State<DashBoard> {
     // Navigator.push(context,
     //     MaterialPageRoute(builder: (context) => page ));
   }
+
   void _select(Choice choice) {
     if (choice.title == 'Settings') {
-      print('Settings');
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SettingScreen(empId: empId,empNm: name,passw: passw)));
     } else if (choice.title == 'Logout') {
       _logout(LoginScreen(), context);
     }
@@ -105,6 +108,7 @@ class _DashBoardState extends State<DashBoard> {
                 strCd = data.data.getString('strCd');
                 allCorp = data.data.getString('allCorp');
                 directorat = data.data.getString('directorat');
+                passw = data.data.getString('passw');
 
                 mFavouriteList = [
                   CategoryList(

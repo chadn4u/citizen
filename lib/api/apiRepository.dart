@@ -17,4 +17,6 @@ class ApiRepository{
   Future<ResponseDio> checkUpdateRepo(Map<String, dynamic> data)async => await apiProvider.checkUpdate(data);
   Future<ResponseDio> getRequestStatusRepo(Map<String, dynamic> data)async => await apiProvider.getRequestStatus(data);
   Future<ResponseDio> getSearchUserRepo(Map<String, dynamic> data)async => await apiProvider.getSearchUser(data);
+  Future<ResponseDio> postResetPasswordRepo(Map<String, dynamic> data)async => await apiProvider.postResetPassword(data);
+  Future<ResponseDio> postEnableUserRepo(Map<String, dynamic> data)async => await apiProvider.postEnableUser(data);
 }

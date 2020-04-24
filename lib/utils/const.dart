@@ -16,3 +16,4 @@ const textSizeXXLarge=30.0;
 
 /*Images */
 const optionsIcon="assets/images/optionsIcon.svg";
+const fingerPrintIcon = "assets/images/t5_fingerprint.svg";

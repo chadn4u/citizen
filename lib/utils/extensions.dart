@@ -2,13 +2,13 @@ import 'package:citizens/pages/dashboard/dashboard.dart';
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/newUser/newUserMain.dart';
 import 'package:citizens/pages/repairing/repairing.dart';
+import 'package:citizens/sqlite/auth.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/widget/carouselSlider.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:citizens/models/settings/tableAuth.dart';
 
 changeStatusColor(Color color) async {
   try {
@@ -106,22 +106,162 @@ class EditTextState extends State<EditText> {
   }
 }
 
-Widget text(var text,
+Widget text(String text,
     {var fontSize = textSizeLargeMedium,
     textColor = textColorSecondary,
     var fontFamily = fontRegular,
     var isCentered = false,
     var maxLine = 1,
-    var latterSpacing = 0.25}) {
-  return Text(text,
+    var latterSpacing = 0.25,
+    var textAllCaps = false,
+    var isLongText = false}) {
+  return Text(textAllCaps ? text.toUpperCase() : text,
       textAlign: isCentered ? TextAlign.center : TextAlign.start,
-      maxLines: maxLine,
+      maxLines: isLongText ? null : maxLine,
       style: TextStyle(
           fontFamily: fontFamily,
           fontSize: fontSize,
           color: textColor,
           height: 1.5,
           letterSpacing: latterSpacing));
+}
+
+Widget quizSettingOptionPattern1(var settingIcon, var heading, var info) {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: colorSettings),
+              width: 45,
+              height: 45,
+              padding: EdgeInsets.all(4),
+              child: Icon(
+                settingIcon,
+                color: colorWhite,
+              ),
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                text(heading),
+                text(info,
+                    textColor: textColorSecondary, fontSize: textSizeSMedium)
+              ],
+            ),
+          ],
+        ),
+        Icon(
+          Icons.keyboard_arrow_right,
+          color: colorArrowIconSettings,
+        )
+      ],
+    ),
+  );
+}
+
+Widget quizSettingOptionPattern2(
+    var icon, var heading, bool switched, String sessionId, String sessionName,String passw,
+    {VoidCallback function}) {
+  bool isSwitched1 = switched;
+
+  return Padding(
+    padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: colorSettings),
+              width: 45,
+              height: 45,
+              padding: EdgeInsets.all(4),
+              child: Icon(
+                icon,
+                color: colorWhite,
+              ),
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            text(heading),
+          ],
+        ),
+        Switch(
+          value: isSwitched1,
+          onChanged: (value) {
+            // setState(() {
+            isSwitched1 = value;
+            DbHelper dbHelper = DbHelper();
+            print(value);
+            if (value) {
+              dbHelper.getSingleData(sessionId).then((onValue) {
+                if (onValue != null) {
+                  print('masuk sini woi');
+                  dbHelper
+                      .deleteAuth(sessionId)
+                      .whenComplete(() => print('kekasih bayangan'));
+                }
+                TableAuth tableAuth = TableAuth(sessionId, sessionName,passw);
+                dbHelper
+                    .insertAuth(tableAuth)
+                    .whenComplete(() => print('awasdw'));
+              });
+            } else {
+              dbHelper.deleteAuth(sessionId);
+            }
+
+            //  });
+          },
+          activeTrackColor: colorSettings,
+          activeColor: colorSettingsView,
+        )
+      ],
+    ),
+  );
+}
+
+Widget quizSettingOptionPattern3(var icon, var heading) {
+  return Padding(
+    padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Container(
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: colorSettings),
+              width: 45,
+              height: 45,
+              padding: EdgeInsets.all(4),
+              child: Icon(
+                icon,
+                color: colorWhite,
+              ),
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            text(heading),
+          ],
+        ),
+        Icon(
+          Icons.keyboard_arrow_right,
+          color: colorArrowIconSettings,
+        )
+      ],
+    ),
+  );
 }
 
 class T5SliderWidget extends StatelessWidget {
@@ -322,13 +462,17 @@ showSheet(BuildContext aContext, var corp, var strCd, var jobCde, var empId,
     CategoryList('Mutation', cat3, Icons.leak_add, null),
     CategoryList('Resign', cat4, Icons.settings_power, null),
     CategoryList('IT Process', cat5, Icons.computer, null),
-    CategoryList('Repairing', cat6, Icons.developer_mode, RepairingPages(
-                          corpFg: corp,
-                          strCd: strCd,
-                          jobCd: jobCde,
-                          empNo: empId,
-                          directorat: directorat,
-                          allCorp: allCorp)),
+    CategoryList(
+        'Repairing',
+        cat6,
+        Icons.developer_mode,
+        RepairingPages(
+            corpFg: corp,
+            strCd: strCd,
+            jobCd: jobCde,
+            empNo: empId,
+            directorat: directorat,
+            allCorp: allCorp)),
     CategoryList('Monitoring', cat1, Icons.desktop_mac, null),
   ];
   showModalBottomSheet(
@@ -368,4 +512,12 @@ showSheet(BuildContext aContext, var corp, var strCd, var jobCde, var empId,
               );
             });
       });
+}
+
+launchScreen(context, String tag, {Object arguments}) {
+  if (arguments == null) {
+    Navigator.pushNamed(context, tag);
+  } else {
+    Navigator.pushNamed(context, tag, arguments: arguments);
+  }
 }

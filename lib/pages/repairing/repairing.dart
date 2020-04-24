@@ -1,9 +1,6 @@
 import 'package:citizens/pages/repairing/resetPassword.dart';
 import 'package:citizens/utils/colors.dart';
-import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:rounded_letter/rounded_letter.dart';
-import 'package:rounded_letter/shape_type.dart';
 
 class RepairingPages extends StatelessWidget {
   final String jobCd;
@@ -23,19 +20,22 @@ class RepairingPages extends StatelessWidget {
       this.directorat})
       : super(key: key);
 
-  List<SubMenuRepairing> lstSubMenu = [
+  List<SubMenuRepairing> lstSubMenu ;
+  ScrollController scrollController = new ScrollController();
+  @override
+  Widget build(BuildContext context) {
+
+    String empp = empNo;
+    lstSubMenu = [
     SubMenuRepairing('Employee Data', 'assets/images/list.png', null),
     SubMenuRepairing('HR sudah sync tapi di mutasi tdk muncul',
         'assets/images/cable.png', null),
     SubMenuRepairing('Mutasi Salah Store', 'assets/images/mutation.png', null),
     SubMenuRepairing('Re-Process Input GMD', 'assets/images/input.png', null),
     SubMenuRepairing('Reset Password + Enable', 'assets/images/compass.png',
-        ResetPassword()),
+        ResetPassword(empNo: empp)),
     SubMenuRepairing('Back', 'assets/images/exit.png', 0),
   ];
-  ScrollController scrollController = new ScrollController();
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
         children: <Widget>[
