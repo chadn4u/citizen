@@ -202,19 +202,15 @@ Widget quizSettingOptionPattern2(
             // setState(() {
             isSwitched1 = value;
             DbHelper dbHelper = DbHelper();
-            print(value);
             if (value) {
               dbHelper.getSingleData(sessionId).then((onValue) {
                 if (onValue != null) {
-                  print('masuk sini woi');
                   dbHelper
-                      .deleteAuth(sessionId)
-                      .whenComplete(() => print('kekasih bayangan'));
+                      .deleteAuth(sessionId);
                 }
                 TableAuth tableAuth = TableAuth(sessionId, sessionName,passw);
                 dbHelper
-                    .insertAuth(tableAuth)
-                    .whenComplete(() => print('awasdw'));
+                    .insertAuth(tableAuth);
               });
             } else {
               dbHelper.deleteAuth(sessionId);

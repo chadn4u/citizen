@@ -59,7 +59,6 @@ class _SettingScreenState extends State<SettingScreen> {
                         FutureBuilder(
                           future: DbHelper().getSingleData(widget.empId),
                           builder: (ctx, snapshot) {
-                            print(snapshot.error);
                             if (snapshot.data != null)
                               return quizSettingOptionPattern2(
                                   Icons.fingerprint,

@@ -22,13 +22,14 @@ class DbHelper {
 
   Future<int> insertAuth(TableAuth tableAuths) async {
     await openDB();
+    print(tableAuths.toJson());
     return await _datebase.insert(tableAuth, tableAuths.toJson());
   }
 
   Future<TableAuth> getAuthList() async {
     await openDB();
     List<Map> maps = await _datebase.query(tableAuth,
-        columns: [columnId, columnempNm],);
+        columns: [columnId, columnempNm,columnPassw],);
         TableAuth tabAuth ;
         for(int i = 0; i < maps.length; i++){
           tabAuth = TableAuth(maps[i][columnId].toString(),maps[i][columnempNm],maps[i][columnPassw]);

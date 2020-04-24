@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final idController = TextEditingController();
   final passwdController = TextEditingController();
   final LocalAuthentication auth = LocalAuthentication();
-  bool _canCheckBiometrics;
+  bool _canCheckBiometrics = false;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
   bool _authenticated = false;
@@ -40,7 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
   PackageInfo packageInfo;
 
   Future<void> _checkBiometrics() async {
-    
     bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
@@ -82,10 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (authenticated) {
       DbHelper().getAuthList().then((onValue) {
-        TableAuth tabAuth = onValue;
-
-        TokenRequest tokenRequest = TokenRequest('password', tabAuth.empId,
-            tabAuth.passw, 'testpass', 'testclient');
+        TokenRequest tokenRequest = TokenRequest(
+            'password', onValue.empId, onValue.passw, 'testpass', 'testclient');
         login(tokenRequest, pr);
       });
     }
@@ -187,6 +184,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    _checkBiometrics();
+  }
+
+  @override
   Widget build(BuildContext context) {
     ProgressDialog pr =
         ProgressDialog(context, isDismissible: false, showLogs: true);
@@ -255,52 +258,49 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 16,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              if (idController.text.isEmpty ||
-                                  passwdController.text.isEmpty) {
-                                _scaffoldKey.currentState
-                                    .removeCurrentSnackBar();
-                                _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                    content:
-                                        Text('Id or Password cant be null')));
-                              } else {
-                                await pr.show();
-                                TokenRequest tokenRequest = TokenRequest(
-                                    'password',
-                                    idController.text,
-                                    passwdController.text,
-                                    'testpass',
-                                    'testclient');
-                                login(tokenRequest, pr);
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(right: 16),
-                              alignment: Alignment.center,
-                              height: width / 8,
-                              child: text('Sign In',
-                                  textColor: colorWhite, isCentered: true),
-                              decoration: boxDecoration(
-                                  bgColor: colorPrimary, radius: 8),
-                            ),
+                        GestureDetector(
+                          onTap: () async {
+                            if (idController.text.isEmpty ||
+                                passwdController.text.isEmpty) {
+                              _scaffoldKey.currentState.removeCurrentSnackBar();
+                              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                  content:
+                                      Text('Id or Password cant be null')));
+                            } else {
+                              await pr.show();
+                              TokenRequest tokenRequest = TokenRequest(
+                                  'password',
+                                  idController.text,
+                                  passwdController.text,
+                                  'testpass',
+                                  'testclient');
+                              login(tokenRequest, pr);
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 16),
+                            alignment: Alignment.center,
+                            height: width / 10,
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: text('Sign In',
+                                textColor: colorWhite, isCentered: true),
+                            decoration:
+                                boxDecoration(bgColor: colorPrimary, radius: 8),
                           ),
                         ),
                         FutureBuilder(
                           future: DbHelper().getAuthList(),
                           builder: (ctx, snapshot) {
                             if (snapshot.hasData) {
-                              if (_canCheckBiometrics == null)
-                                _checkBiometrics();
                               if (_canCheckBiometrics) {
                                 return GestureDetector(
                                     onTap: () async {
                                       _authenticate(pr);
                                     },
                                     child: SvgPicture.asset(fingerPrintIcon,
-                                        width: width / 8.2,
+                                        width: width / 10,
                                         color: colorPrimary));
                               } else {
                                 return Container();
@@ -332,7 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           session.addToString('access_token', token.access_token);
           session.addToString('refresh_token', token.refresh_token);
-          getLoginDetail(idController.text, passwdController.text, pr);
+          getLoginDetail(tokenRequest.username, tokenRequest.password, pr);
         } else {
           ErrorResponse errorResponse = value.data;
           _scaffoldKey.currentState.removeCurrentSnackBar();
