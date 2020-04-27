@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/widget/carouselSlider.dart';
 import 'package:citizens/models/settings/tableAuth.dart';
+import 'package:nb_utils/nb_utils.dart';
 
 changeStatusColor(Color color) async {
   try {
@@ -167,8 +168,8 @@ Widget quizSettingOptionPattern1(var settingIcon, var heading, var info) {
   );
 }
 
-Widget quizSettingOptionPattern2(
-    var icon, var heading, bool switched, String sessionId, String sessionName,String passw,
+Widget quizSettingOptionPattern2(var icon, var heading, bool switched,
+    String sessionId, String sessionName, String passw,
     {VoidCallback function}) {
   bool isSwitched1 = switched;
 
@@ -196,30 +197,32 @@ Widget quizSettingOptionPattern2(
             text(heading),
           ],
         ),
-        Switch(
-          value: isSwitched1,
-          onChanged: (value) {
-            // setState(() {
-            isSwitched1 = value;
-            DbHelper dbHelper = DbHelper();
-            if (value) {
-              dbHelper.getSingleData(sessionId).then((onValue) {
-                if (onValue != null) {
-                  dbHelper
-                      .deleteAuth(sessionId);
-                }
-                TableAuth tableAuth = TableAuth(sessionId, sessionName,passw);
-                dbHelper
-                    .insertAuth(tableAuth);
-              });
-            } else {
-              dbHelper.deleteAuth(sessionId);
-            }
-
-            //  });
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Switch(
+              value: isSwitched1,
+              onChanged: (value) {
+                setState(() {
+                  isSwitched1 = value;
+                  DbHelper dbHelper = DbHelper();
+                  if (value) {
+                    dbHelper.getSingleData(sessionId).then((onValue) {
+                      if (onValue != null) {
+                        dbHelper.deleteAuth(sessionId);
+                      }
+                      TableAuth tableAuth =
+                          TableAuth(sessionId, sessionName, passw);
+                      dbHelper.insertAuth(tableAuth);
+                    });
+                  } else {
+                    dbHelper.deleteAuth(sessionId);
+                  }
+                });
+              },
+              activeTrackColor: colorSettings,
+              activeColor: colorSettingsView,
+            );
           },
-          activeTrackColor: colorSettings,
-          activeColor: colorSettingsView,
         )
       ],
     ),
@@ -515,5 +518,42 @@ launchScreen(context, String tag, {Object arguments}) {
     Navigator.pushNamed(context, tag);
   } else {
     Navigator.pushNamed(context, tag, arguments: arguments);
+  }
+}
+
+class ButtonWalkthrough extends StatefulWidget {
+  var textContent;
+  VoidCallback onPressed;
+  var isStroked = false;
+
+  ButtonWalkthrough(
+      {@required this.textContent,
+      @required this.onPressed,
+      this.isStroked = false,
+      });
+
+  @override
+  ButtonWalkthroughState createState() => ButtonWalkthroughState();
+}
+
+class ButtonWalkthroughState extends State<ButtonWalkthrough> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onPressed,
+      child: Container(
+        width: MediaQuery.of(context).size.width /2,
+        padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+        alignment: Alignment.center,
+        child: text(widget.textContent,
+            textColor: widget.isStroked ? t6colorPrimary : whiteColor,
+            isCentered: true,
+            fontFamily: fontMedium,
+            textAllCaps: true),
+        decoration: widget.isStroked
+            ? boxDecoration(bgColor: Colors.transparent, color: t6colorPrimary)
+            : boxDecoration(bgColor: t6colorPrimary, radius: 12),
+      ),
+    );
   }
 }

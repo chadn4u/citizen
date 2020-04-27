@@ -18,6 +18,7 @@ class _UpdatePagesState extends State<UpdatePages> {
   @override
   Widget build(BuildContext context) {
     if (otaEvent == null) {
+      print('woi');
       return Scaffold(
         body: Container(
           child: Center(child: Container(

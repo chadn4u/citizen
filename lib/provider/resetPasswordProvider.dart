@@ -1,5 +1,4 @@
 import 'package:citizens/utils/colors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ResetPasswordProvider with ChangeNotifier {

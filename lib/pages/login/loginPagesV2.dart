@@ -52,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print(canCheckBiometrics);
       _canCheckBiometrics = canCheckBiometrics;
     });
+    
   }
 
   Future<void> _authenticate(ProgressDialog pr) async {
@@ -71,6 +72,11 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     } on PlatformException catch (e) {
       print(e);
+      if (_scaffoldKey != null || !_canCheckBiometrics) {
+      _scaffoldKey.currentState.removeCurrentSnackBar();
+      _scaffoldKey.currentState
+          .showSnackBar(SnackBar(content: Text('Ooops sorry we cant detect biometric in this device')));
+    }
     }
     if (!mounted) return;
 
@@ -184,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _checkBiometrics();
   }

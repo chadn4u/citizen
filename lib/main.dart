@@ -4,6 +4,7 @@ import 'package:citizens/pages/dashboard/dashboard.dart';
 import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/pages/mainMenu.dart';
+import 'package:citizens/pages/splash/splashScreen.dart';
 import 'package:citizens/pages/updates/updatePages.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ import 'api/apiRepository.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
     // Set default home.
-  Widget _defaultHome = LoginScreen();
+  Widget _defaultHome = SplashScreen();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -40,11 +41,10 @@ void main() async {
         } else {
           CheckUpdateDetail checkUpdateDetail = checkUpdateFeed.data[0];
           _defaultHome = UpdatePages(
-            updateLink: checkUpdateDetail.apkLink,
+            updateLink: 'buset',
           );
         }
       } else {
-        print('asdwqewq');
         // Get result of the login function.
         String _result = pref.getString('empNo');
         if (_result != null) {

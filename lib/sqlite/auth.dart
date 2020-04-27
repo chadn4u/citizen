@@ -15,7 +15,7 @@ class DbHelper {
       _datebase = await openDatabase(join(await getDatabasesPath(), "auth.db"),
           version: 1, onCreate: (Database db, int version) async {
         await db.execute(
-            "CREATE TABLE $tableAuth($columnId String PRIMARY KEY,$columnempNm TEXT,$columnPassw TEXT)");
+            "CREATE TABLE $tableAuth($columnId TEXT PRIMARY KEY,$columnempNm TEXT,$columnPassw TEXT)");
       });
     }
   }

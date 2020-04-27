@@ -17,3 +17,6 @@ const textSizeXXLarge=30.0;
 /*Images */
 const optionsIcon="assets/images/optionsIcon.svg";
 const fingerPrintIcon = "assets/images/t5_fingerprint.svg";
+const storageImage = "assets/images/storage.png";
+const locationImage = "assets/images/location.png";
+const updateImage = "assets/images/update.png";
