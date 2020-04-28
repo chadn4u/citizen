@@ -1,11 +1,7 @@
 import 'package:citizens/models/checkUpdate/checkUpdateDetail.dart';
 import 'package:citizens/models/checkUpdate/checkUpdateFeed.dart';
-import 'package:citizens/pages/dashboard/dashboard.dart';
 import 'package:citizens/pages/login/loginPagesV2.dart';
-import 'package:citizens/pages/loginpages.dart';
-import 'package:citizens/pages/mainMenu.dart';
 import 'package:citizens/pages/splash/splashScreen.dart';
-import 'package:citizens/pages/updates/updatePages.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -36,32 +32,32 @@ void main() async {
           // Get result of the login function.
           String _result = pref.getString('empNo');
           if (_result != null) {
-            _defaultHome = DashBoard();
+            _defaultHome = SplashScreen();
           }
         } else {
           CheckUpdateDetail checkUpdateDetail = checkUpdateFeed.data[0];
-          _defaultHome = UpdatePages(
-            updateLink: 'buset',
+          _defaultHome = SplashScreen(
+            linkUpdate: checkUpdateDetail.apkLink,
           );
         }
       } else {
         // Get result of the login function.
         String _result = pref.getString('empNo');
         if (_result != null) {
-          _defaultHome = DashBoard();
+          _defaultHome = SplashScreen();
         }
       }
     } else {
       // Get result of the login function.
       String _result = pref.getString('empNo');
       if (_result != null) {
-        _defaultHome = DashBoard();
+        _defaultHome = SplashScreen();
       }
     }
   }).catchError((onError){
      String _result = pref.getString('empNo');
       if (_result != null) {
-        _defaultHome = DashBoard();
+        _defaultHome = SplashScreen();
       }
   });
 

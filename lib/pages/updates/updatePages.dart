@@ -1,3 +1,4 @@
+import 'package:citizens/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:ota_update/ota_update.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,21 +19,28 @@ class _UpdatePagesState extends State<UpdatePages> {
   @override
   Widget build(BuildContext context) {
     if (otaEvent == null) {
-      print('woi');
       return Scaffold(
+        appBar: AppBar(
+          title: const Text('New Update'),
+        ),
         body: Container(
-          child: Center(child: Container(
+          child: Center(
+              child: Container(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('New Update Available',style: TextStyle(color: Colors.red),),
-                Text('Click link below, if download not started'),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InkWell(
-                    child: Text('Link',style: TextStyle(color: Colors.blue,fontSize: 32),),
-                    onTap: ()=> launch(widget.updateLink),
-                  ),
+                Text(
+                  'New Update Available',
+                  style: TextStyle(color: Colors.red, fontSize: 24),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ButtonWalkthrough(
+                  textContent: 'Update apps',
+                  onPressed: () {
+                    tryOtaUpdate();
+                  },
                 )
               ],
             ),
@@ -40,7 +48,6 @@ class _UpdatePagesState extends State<UpdatePages> {
         ),
       );
     }
-    print(widget.updateLink);
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Update'),
@@ -49,6 +56,24 @@ class _UpdatePagesState extends State<UpdatePages> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            Text(
+              'New Update Available',
+              style: TextStyle(color: Colors.red),
+            ),
+            Text('Click link below, if download not started'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                child: Text(
+                  'Link',
+                  style: TextStyle(color: Colors.blue, fontSize: 32),
+                ),
+                onTap: () => launch(widget.updateLink),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
             Text(
               'Status: ${getStatus(otaEvent.status)} ',
               style: TextStyle(fontSize: 24),
@@ -68,7 +93,6 @@ class _UpdatePagesState extends State<UpdatePages> {
   @override
   void initState() {
     super.initState();
-    tryOtaUpdate();
   }
 
   String getStatus(OtaStatus otaStatus) {
@@ -104,7 +128,6 @@ class _UpdatePagesState extends State<UpdatePages> {
           .listen(
         (OtaEvent event) {
           setState(() => otaEvent = event);
-          print(otaEvent);
         },
       );
     } catch (e) {

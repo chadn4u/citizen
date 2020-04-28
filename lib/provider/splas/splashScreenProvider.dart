@@ -47,10 +47,11 @@ class SplashScreenProvider with ChangeNotifier {
     Future.delayed(Duration(seconds: 1), () async {
       for (int i = 0; i < _lsPermission.length; i++) {
         if (!await _lsPermission[i].request().isUndetermined) {
-          _lstSplash.add(SplashScreenModel(_lsPermission[i], 0));
+          // _lstSplash.add(SplashScreenModel(_lsPermission[i], 0));
         }
       }
       _doneCheckPerm = true;
+      done();
       notifyListeners();
     });
 
@@ -59,18 +60,26 @@ class SplashScreenProvider with ChangeNotifier {
         setCurrentStatus('Checking updates....');
         notifyListeners();
         Future.delayed(Duration(seconds: 1), () {
-          _lstSplash.add(SplashScreenModel('Updates', 1));
+          // _lstSplash.add(SplashScreenModel('Updates', 1));
           notifyListeners();
         });
       });
       _doneCheckUpdate = true;
+      done();
       notifyListeners();
     }else{
       _doneCheckUpdate = true;
+      done();
       notifyListeners();
     }
 
     
+  }
+
+  void done(){
+    if(_doneCheckPerm && _doneCheckUpdate){
+      _currentStatus = 'Done...';
+    }
   }
   // @override
   // void dispose(){
