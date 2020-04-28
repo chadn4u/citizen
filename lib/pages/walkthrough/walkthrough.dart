@@ -54,16 +54,24 @@ class WalkthroughScrreenState extends State<WalkthroughScrreen> {
                     onTap: () async {
                       int count = 0;
                       String update;
+                      int permCount = 0;
                       for (int i = 0; i < widget.lstSplash.length; i++) {
                         if (widget.lstSplash[i].typeChecking is Permission) {
                           Permission perm = widget.lstSplash[i].typeChecking;
                           if (!await perm.isGranted) count++;
+                          permCount++;
                         } else {
                           update = widget.lstSplash[i].typeChecking;
                         }
                       }
-                      if (count == widget.lstSplash.length) {
-                        routes();
+                      print(count);
+                      if (count == permCount) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) => CustomDialogWT(
+                            textDialog: 'You need to grant all Permissions',
+                          ),
+                        );
                       } else if (count == 0) {
                         if (update != null) {
                           showDialog(
@@ -130,7 +138,7 @@ class WalkthroughScrreenState extends State<WalkthroughScrreen> {
 
   void routes() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    if (pref.getString('empNo').isEmpty) {
+    if (pref.getString('empNo') == null) {
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (ctx) => LoginScreen()));
     } else {

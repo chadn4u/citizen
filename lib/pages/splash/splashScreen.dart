@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:citizens/provider/splas/splashScreenProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:citizens/utils/extensions.dart';
 
 class SplashScreen extends StatefulWidget {
   final String linkUpdate;
@@ -94,15 +95,17 @@ class _State extends State<SplashScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset('assets/images/lottelogo.png',
-                            width: MediaQuery.of(context).size.width / 2.5,
-                            height: MediaQuery.of(context).size.width / 2.5),
+                        FadeAnimation(2.6, Image.asset('assets/images/lottelogo.png',
+                              width: MediaQuery.of(context).size.width / 2.5,
+                              height: MediaQuery.of(context).size.width / 2.5),
+                        ),
                         Padding(
                           padding: EdgeInsets.only(top: 10),
                         ),
-                        Text(
-                          "Lotte",
-                          style: TextStyle(color: colorWhite, fontSize: 20),
+                        FadeAnimation(3.6,Text(
+                            "Lotte",
+                            style: TextStyle(color: colorWhite, fontSize: 20),
+                          ),
                         )
                       ],
                     ),
@@ -152,7 +155,7 @@ class _State extends State<SplashScreen> {
               .add(SplashScreenModel(_lsPermission[i], 0, location, title));
         } else if (_lsPermission[i] == Permission.location &&
             !await _lsPermission[i].isGranted) {
-          location = locationImage;
+          location = locationImageGif;
           title = "Request Permission for location";
           _lstSplash
               .add(SplashScreenModel(_lsPermission[i], 0, location, title));

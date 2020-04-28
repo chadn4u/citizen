@@ -10,6 +10,7 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/widget/carouselSlider.dart';
 import 'package:citizens/models/settings/tableAuth.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:simple_animations/simple_animations.dart';
 
 changeStatusColor(Color color) async {
   try {
@@ -553,6 +554,37 @@ class ButtonWalkthroughState extends State<ButtonWalkthrough> {
         decoration: widget.isStroked
             ? boxDecoration(bgColor: Colors.transparent, color: t6colorPrimary)
             : boxDecoration(bgColor: t6colorPrimary, radius: 12),
+      ),
+    );
+  }
+}
+
+class FadeAnimation extends StatelessWidget {
+  final double delay;
+  final Widget child;
+
+  FadeAnimation(this.delay, this.child);
+
+  @override
+  Widget build(BuildContext context) {
+    final tween = MultiTrackTween([
+      Track("opacity").add(Duration(milliseconds: 500), Tween(begin: 0.0, end: 1.0)),
+      Track("translateY").add(
+        Duration(milliseconds: 500), Tween(begin: -30.0, end: 0.0),
+        curve: Curves.easeOut)
+    ]);
+
+    return ControlledAnimation(
+      delay: Duration(milliseconds: (500 * delay).round()),
+      duration: tween.duration,
+      tween: tween,
+      child: child,
+      builderWithChild: (context, child, animation) => Opacity(
+        opacity: animation["opacity"],
+        child: Transform.translate(
+          offset: Offset(0, animation["translateY"]), 
+          child: child
+        ),
       ),
     );
   }
