@@ -1,5 +1,5 @@
 import 'package:animator/animator.dart';
-import 'package:citizens/pages/dashboard/dashboard.dart';
+import 'package:citizens/pages/dashboard/dashboardV1.dart';
 import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/walkthrough/walkthrough.dart';
 import 'package:citizens/utils/colors.dart';
@@ -56,7 +56,7 @@ class _State extends State<SplashScreen> {
               if (pref.getString('empNo') != null) {
                 print('tai ucing');
                 return Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => DashBoard()));
+                    MaterialPageRoute(builder: (ctx) => Dashboard()));
               } else {
                 print('tai ambing');
                 return Navigator.of(context).pushReplacement(

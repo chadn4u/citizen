@@ -21,3 +21,15 @@ const colorSettings = Color(0xFFACB5FD);
 const colorArrowIconSettings=Color(0xFF747474);
 const colorSettingsView=Color(0xFFDADADA);
 const t6colorPrimary=Color(0XFF313384);
+
+
+/*
+  color gradient
+ */
+const colorGradientYT1 = Color(0XFF3437B8);
+const colorGradientYT2 = Color(0XFF4A45CE);
+const colorGradientYT3 = Color(0XFF9031C9);
+
+const colorGradientBtnClick1 = Color(0XFFF790B0);
+const colorGradientBtnClick2 = Color(0XFFEB68B8);
+

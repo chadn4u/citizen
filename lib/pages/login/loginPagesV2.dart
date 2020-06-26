@@ -4,7 +4,7 @@ import 'package:citizens/models/responseDio/errorResponse.dart';
 import 'package:citizens/models/settings/tableAuth.dart';
 import 'package:citizens/models/token/token.dart';
 import 'package:citizens/models/token/tokenRequest.dart';
-import 'package:citizens/pages/dashboard/dashboard.dart';
+import 'package:citizens/pages/dashboard/dashboardV1.dart';
 import 'package:citizens/sqlite/auth.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
         print(isHidden);
       });
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => DashBoard()));
+          context, MaterialPageRoute(builder: (context) => Dashboard()));
     });
   }
 

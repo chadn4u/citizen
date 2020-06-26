@@ -4,14 +4,17 @@ import 'package:citizens/pages/login/loginPagesV2.dart';
 import 'package:citizens/pages/splash/splashScreen.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'api/apiRepository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    // Set default home.
+  SystemChrome.setEnabledSystemUIOverlays([]);
+//     Set default home.
   Widget _defaultHome = SplashScreen();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
@@ -54,11 +57,11 @@ void main() async {
         _defaultHome = SplashScreen();
       }
     }
-  }).catchError((onError){
-     String _result = pref.getString('empNo');
-      if (_result != null) {
-        _defaultHome = SplashScreen();
-      }
+  }).catchError((onError) {
+    String _result = pref.getString('empNo');
+    if (_result != null) {
+      _defaultHome = SplashScreen();
+    }
   });
 
   FlutterStatusbarcolor.setStatusBarColor(colorPrimary);
