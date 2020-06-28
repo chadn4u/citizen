@@ -33,3 +33,12 @@ const colorGradientYT3 = Color(0XFF9031C9);
 const colorGradientBtnClick1 = Color(0XFFF790B0);
 const colorGradientBtnClick2 = Color(0XFFEB68B8);
 
+const colorGradientBtn11 = Color(0XFFFFCF1B);
+const colorGradientBtn12 = Color(0XFFFF881B);
+
+const colorGradientBtn21 = Color(0XFFFF9482);
+const colorGradientBtn22 = Color(0XFF7D77FF);
+
+const colorGradientBtn31 = Color(0XFFF869D5);
+const colorGradientBtn32 = Color(0XFF5650DE);
+
