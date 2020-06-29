@@ -21,3 +21,6 @@ const storageImage = "assets/images/storage.png";
 const locationImage = "assets/images/location.png";
 const locationImageGif = "assets/images/location_preview.gif";
 const updateImage = "assets/images/update.png";
+const ic_listen = "assets/images/listen.png";
+const ic_build = "assets/images/build.png";
+const ic_plan = "assets/images/plan.png";

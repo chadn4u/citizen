@@ -1,7 +1,7 @@
 import 'package:citizens/models/checkUpdate/checkUpdateDetail.dart';
 import 'package:citizens/models/checkUpdate/checkUpdateFeed.dart';
 import 'package:citizens/pages/login/loginPagesV2.dart';
-import 'package:citizens/pages/splash/splashScreen.dart';
+import 'package:citizens/pages/splash/splashScreenV1.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

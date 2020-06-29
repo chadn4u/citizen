@@ -21,7 +21,8 @@ const colorSettings = Color(0xFFACB5FD);
 const colorArrowIconSettings=Color(0xFF747474);
 const colorSettingsView=Color(0xFFDADADA);
 const t6colorPrimary=Color(0XFF313384);
-
+const inactivedot_color= Color(0XFFDADADA);
+const t3_textColorSecondary= Color(0XFF9D9D9D);
 
 /*
   color gradient

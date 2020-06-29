@@ -54,11 +54,9 @@ class _State extends State<SplashScreen> {
             if (_lstSplash.isEmpty) {
               SharedPreferences pref = await SharedPreferences.getInstance();
               if (pref.getString('empNo') != null) {
-                print('tai ucing');
                 return Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (ctx) => Dashboard()));
               } else {
-                print('tai ambing');
                 return Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (ctx) => LoginScreen()));
               }
