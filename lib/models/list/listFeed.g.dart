@@ -9,9 +9,8 @@ part of 'listFeed.dart';
 ListFeed _$ListFeedFromJson(Map<String, dynamic> json) {
   return ListFeed(
     (json['data'] as List)
-        ?.map((e) => e == null
-            ? null
-            : ListDataModel.from(e as Map<String, dynamic>))
+        ?.map((e) =>
+            e == null ? null : ListDataModel.from(e as Map<String, dynamic>))
         ?.toList(),
     json['totalData'] as String,
     json['status'] as bool,

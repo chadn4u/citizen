@@ -13,7 +13,8 @@ class SettingScreen extends StatefulWidget {
   final String empNm;
   final String passw;
 
-  const SettingScreen({Key key, this.empId, this.empNm, this.passw}) : super(key: key);
+  const SettingScreen({Key key, this.empId, this.empNm, this.passw})
+      : super(key: key);
 
   @override
   _SettingScreenState createState() => _SettingScreenState();
@@ -77,6 +78,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                   widget.passw);
                           },
                         ),
+                        quizSettingOptionPattern1('Face Recognition',
+                            widget.empId, widget.empNm, widget.passw)
                       ],
                     ),
                   ),

@@ -1,3 +1,7 @@
+import 'package:citizens/bloc/faceAuth/faceAuthBloc.dart';
+import 'package:citizens/bloc/faceAuth/faceAuthEvent.dart';
+import 'package:citizens/bloc/faceAuth/faceAuthState.dart';
+import 'package:citizens/models/faceAuth/faceAuth.dart';
 import 'package:citizens/pages/dashboard/dashboard.dart';
 import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/pages/newUser/newUserMain.dart';
@@ -6,11 +10,14 @@ import 'package:citizens/sqlite/auth.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/widget/carouselSlider.dart';
 import 'package:citizens/models/settings/tableAuth.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:simple_animations/simple_animations.dart';
+
+import 'faceDetector/faceDetector.dart';
 
 changeStatusColor(Color color) async {
   try {
@@ -128,43 +135,92 @@ Widget text(String text,
           letterSpacing: latterSpacing));
 }
 
-Widget quizSettingOptionPattern1(var settingIcon, var heading, var info) {
-  return Padding(
-    padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Container(
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: colorSettings),
-              width: 45,
-              height: 45,
-              padding: EdgeInsets.all(4),
-              child: Icon(
-                settingIcon,
-                color: colorWhite,
+Widget quizSettingOptionPattern1(
+  var heading,
+  String sessionId,
+  String sessionName,
+  String passw,
+) {
+  FaceAuthBloc _faceAuthBloc = FaceAuthBloc();
+  _faceAuthBloc.add(CheckStatusEvent(sessionId));
+  return BlocProvider(
+    create: (context) => _faceAuthBloc,
+    child: Padding(
+      padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: colorSettings),
+                width: 45,
+                height: 45,
+                padding: EdgeInsets.all(4),
+                child: Container(
+                  child: Image.asset(
+                    "assets/images/face_recog.png",
+                    color: Colors.white,
+                    fit: BoxFit.cover,
+                  ),
+                  width: 20,
+                  height: 20,
+                ),
               ),
-            ),
-            SizedBox(
-              width: 16,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                text(heading),
-                text(info,
-                    textColor: textColorSecondary, fontSize: textSizeSMedium)
-              ],
-            ),
-          ],
-        ),
-        Icon(
-          Icons.keyboard_arrow_right,
-          color: colorArrowIconSettings,
-        )
-      ],
+              SizedBox(
+                width: 16,
+              ),
+              text(heading),
+            ],
+          ),
+          BlocBuilder<FaceAuthBloc, FaceAuthState>(
+            builder: (ctx, state) {
+              if (state is CheckStatusFetchedState) {
+                FaceAuth faceAuth = state.responsedio.data;
+                return (faceAuth.status)
+                    ? Expanded(
+                        child: Text(
+                          'Active',
+                          style: TextStyle(color: Colors.green, fontSize: 12),
+                        ),
+                      )
+                    : Expanded(
+                        child: FlatButton(
+                          onPressed: () {
+                            print('tapped');
+                            Navigator.push(ctx, MaterialPageRoute(
+                                builder: (context) => CameraPreviewScanner()));
+                          },
+                          child: Text(
+                            "Not Active",
+                            style: TextStyle(fontSize: 12, color: Colors.red),
+                          ),
+                        ),
+                      );
+              } else if (state is FaceFetchingState ||
+                  state is FaceUninitializedState) {
+                return CircularProgressIndicator();
+              } else {
+                print('there');
+                return Expanded(
+                  child: FlatButton(
+                    onPressed: () {
+                      print('tapped');
+                      Navigator.push(ctx, MaterialPageRoute(
+                          builder: (context) => CameraPreviewScanner()));
+                    },
+                    child: Text(
+                      "Not Active",
+                      style: TextStyle(fontSize: 12, color: Colors.red),
+                    ),
+                  ),
+                );
+              }
+            },
+          )
+        ],
+      ),
     ),
   );
 }
@@ -527,11 +583,11 @@ class ButtonWalkthrough extends StatefulWidget {
   VoidCallback onPressed;
   var isStroked = false;
 
-  ButtonWalkthrough(
-      {@required this.textContent,
-      @required this.onPressed,
-      this.isStroked = false,
-      });
+  ButtonWalkthrough({
+    @required this.textContent,
+    @required this.onPressed,
+    this.isStroked = false,
+  });
 
   @override
   ButtonWalkthroughState createState() => ButtonWalkthroughState();
@@ -543,7 +599,7 @@ class ButtonWalkthroughState extends State<ButtonWalkthrough> {
     return GestureDetector(
       onTap: widget.onPressed,
       child: Container(
-        width: MediaQuery.of(context).size.width /2,
+        width: MediaQuery.of(context).size.width / 2,
         padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
         alignment: Alignment.center,
         child: text(widget.textContent,
@@ -568,10 +624,11 @@ class FadeAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tween = MultiTrackTween([
-      Track("opacity").add(Duration(milliseconds: 500), Tween(begin: 0.0, end: 1.0)),
+      Track("opacity")
+          .add(Duration(milliseconds: 500), Tween(begin: 0.0, end: 1.0)),
       Track("translateY").add(
-        Duration(milliseconds: 500), Tween(begin: -30.0, end: 0.0),
-        curve: Curves.easeOut)
+          Duration(milliseconds: 500), Tween(begin: -30.0, end: 0.0),
+          curve: Curves.easeOut)
     ]);
 
     return ControlledAnimation(
@@ -582,9 +639,7 @@ class FadeAnimation extends StatelessWidget {
       builderWithChild: (context, child, animation) => Opacity(
         opacity: animation["opacity"],
         child: Transform.translate(
-          offset: Offset(0, animation["translateY"]), 
-          child: child
-        ),
+            offset: Offset(0, animation["translateY"]), child: child),
       ),
     );
   }

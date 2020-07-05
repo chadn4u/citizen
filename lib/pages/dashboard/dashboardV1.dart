@@ -1,9 +1,12 @@
 import 'package:citizens/pages/citizen/citizen.dart';
 import 'package:citizens/pages/list/list.dart';
+import 'package:citizens/settings/settingScreen.dart';
 import 'package:citizens/utils/colors.dart';
+import 'package:citizens/utils/faceDetector/faceDetector.dart';
 import 'package:citizens/widget/dashboard/curvedNavigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timer_builder/timer_builder.dart';
 
 class Dashboard extends StatelessWidget {
@@ -45,7 +48,10 @@ class Dashboard extends StatelessWidget {
                       ),
                       CircleAvatar(
                         backgroundColor: Colors.white,
-                        child: Icon(Icons.person,color: Colors.grey,),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                        ),
                       )
                     ],
                   ),
@@ -261,10 +267,23 @@ class Dashboard extends StatelessWidget {
         ],
         onTap: (index) {
           //Handle button tap
+          if (index == 1) {
+            _checkSession().then((value) => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (ctx) => SettingScreen(
+                        empId: value.getString("empNo"),
+                        empNm: value.getString('empNm'),
+                        passw: value.getString('passw')))));
+          }
         },
       ),
     );
   }
+}
+
+Future<SharedPreferences> _checkSession() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  return pref;
 }
 
 class CardMenu extends StatelessWidget {

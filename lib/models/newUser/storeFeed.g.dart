@@ -9,8 +9,7 @@ part of 'storeFeed.dart';
 StoreFeed _$StoreFeedFromJson(Map<String, dynamic> json) {
   return StoreFeed(
     (json['data'] as List)
-        ?.map((e) =>
-            e == null ? null : Stores.from(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : Stores.from(e as Map<String, dynamic>))
         ?.toList(),
     json['status'] as bool,
   );

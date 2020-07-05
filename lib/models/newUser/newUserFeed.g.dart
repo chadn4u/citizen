@@ -9,8 +9,7 @@ part of 'newUserFeed.dart';
 NewUserFeed _$NewUserFeedFromJson(Map<String, dynamic> json) {
   return NewUserFeed(
     (json['data'] as List)
-        ?.map((e) =>
-            e == null ? null : NewUser.from(e as Map<String, dynamic>))
+        ?.map((e) => e == null ? null : NewUser.from(e as Map<String, dynamic>))
         ?.toList(),
     json['totalData'] as String,
     json['status'] as bool,

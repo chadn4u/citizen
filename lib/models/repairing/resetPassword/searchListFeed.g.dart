@@ -9,9 +9,8 @@ part of 'searchListFeed.dart';
 SearchListFeed _$SearchListFeedFromJson(Map<String, dynamic> json) {
   return SearchListFeed(
     (json['data'] as List)
-        ?.map((e) => e == null
-            ? null
-            : SearchListReset.from(e as Map<String, dynamic>))
+        ?.map((e) =>
+            e == null ? null : SearchListReset.from(e as Map<String, dynamic>))
         ?.toList(),
     json['status'] as bool,
   );

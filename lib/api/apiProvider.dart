@@ -1,4 +1,5 @@
 import 'package:citizens/models/checkUpdate/checkUpdateFeed.dart';
+import 'package:citizens/models/faceAuth/faceAuth.dart';
 import 'package:citizens/models/list/listFeed.dart';
 import 'package:citizens/models/login/modelLoginFeed.dart';
 import 'package:citizens/models/newUser/divisionFeed.dart';
@@ -24,6 +25,12 @@ class ApiProvider {
     ErrorResponse errorResponse;
     //dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
     try {
+      // http_dio.FormData formData = http_dio.FormData.from({
+      //   "name": "wendux",
+      //   "age": 25,
+      //   "file":
+      //       await http_dio.MultipartFile.fromFile("./text.txt", filename: "upload.txt")
+      // });
       response = await dio.post(
           'http://frontier.lottemart.co.id/authorize/password_credentials',
           data: http_dio.FormData.fromMap(data),
@@ -493,7 +500,7 @@ class ApiProvider {
         "Content-Type": "application/x-www-form-urlencoded"
       };
     }));
-     dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: false));
     try {
       response = await dio.post(
           'http://frontier.lottemart.co.id/Citizen/enableUser',
@@ -507,6 +514,41 @@ class ApiProvider {
       }
 
       print(responseDio);
+      return responseDio;
+    } on http_dio.DioError catch (e) {
+      throw (e);
+    }
+  }
+
+  Future<ResponseDio> postCheckFaceAuth(Map data) async {
+    http_dio.Dio dio = http_dio.Dio();
+    dio.options.connectTimeout = 5000;
+    dio.options.receiveTimeout = 5000;
+    http_dio.Response response;
+    var head = {"Content-Type": "application/json"};
+    ResponseDio responseDio;
+    ErrorResponse errorResponse;
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
+    try {
+      // http_dio.FormData formData = http_dio.FormData.from({
+      //   "name": "wendux",
+      //   "age": 25,
+      //   "file":
+      //       await http_dio.MultipartFile.fromFile("./text.txt", filename: "upload.txt")
+      // });
+      response = await dio.post(
+          'http://fr.frontier.lottemart.co.id/checkStatusPostgre',
+          data: http_dio.FormData.fromMap(data),
+          options: http_dio.Options(headers: head));
+      if (response.statusCode == 200) {
+        responseDio = ResponseDio(FaceAuth.from(response.data), 'Sukses');
+      } else {
+        errorResponse = ErrorResponse.from(response.data);
+        responseDio = ResponseDio(errorResponse,
+            '${errorResponse.message} ,E ${response.statusCode}');
+      }
+
+      //print(responseDio);
       return responseDio;
     } on http_dio.DioError catch (e) {
       throw (e);

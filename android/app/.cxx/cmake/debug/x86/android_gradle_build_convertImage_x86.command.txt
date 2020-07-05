@@ -1,0 +1,8 @@
+Executable : C:\Users\chadp\AppData\Local\Android\sdk\cmake\3.6.4111459\bin\cmake.exe
+arguments : 
+--build
+D:\Flutter\citizen\android\app\.cxx\cmake\debug\x86
+--target
+convertImage
+jvmArgs : 
+

@@ -9,8 +9,8 @@ part of 'divisionFeed.dart';
 DivisionFeed _$DivisionFeedFromJson(Map<String, dynamic> json) {
   return DivisionFeed(
     (json['data'] as List)
-        ?.map((e) =>
-            e == null ? null : Division.from(e as Map<String, dynamic>))
+        ?.map(
+            (e) => e == null ? null : Division.from(e as Map<String, dynamic>))
         ?.toList(),
     json['status'] as bool,
   );

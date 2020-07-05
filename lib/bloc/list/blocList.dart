@@ -92,7 +92,7 @@ class ListBloc extends Bloc<UserEvents, ListState> {
       } else
         yield ListFetchedState(responseDio);
     } else {
-      ListEmptyState();
+      yield ListEmptyState();
     }
   }
 }
