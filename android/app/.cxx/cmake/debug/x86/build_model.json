@@ -2,7 +2,7 @@
   "variant": {
     "module": {
       "rootBuildGradleFolder": "D:\\Flutter\\citizen\\android",
-      "sdkFolder": "C:\\Users\\chadp\\AppData\\Local\\Android\\sdk",
+      "sdkFolder": "C:\\Users\\user\\AppData\\Local\\Android\\sdk",
       "isNativeCompilerSettingsCacheEnabled": false,
       "isBuildOnlyTargetAbiEnabled": true,
       "splitsAbiFilterSet": [],
@@ -13,7 +13,7 @@
       "buildSystem": "CMAKE",
       "compilerSettingsCacheFolder": "D:\\Flutter\\citizen\\android\\.cxx",
       "cxxFolder": "D:\\Flutter\\citizen\\android\\app\\.cxx",
-      "ndkFolder": "C:\\Users\\chadp\\AppData\\Local\\Android\\sdk\\ndk\\20.0.5594570",
+      "ndkFolder": "C:\\Users\\user\\AppData\\Local\\Android\\sdk\\ndk\\20.0.5594570",
       "ndkVersion": "20.0.5594570",
       "ndkSupportedAbiList": [
         "ARMEABI_V7A",

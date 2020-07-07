@@ -1,3 +1,4 @@
+import 'package:citizens/models/login/modelLogin.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'faceAuth.g.dart';
@@ -14,9 +15,11 @@ class FaceAuth {
   final bool is_match;
   @JsonKey(name: "face_found")
   final bool face_found;
+  @JsonKey(name: "data")
+  final ModelLogin data;
 
-  FaceAuth(
-      this.status, this.message, this.emp_no, this.is_match, this.face_found);
+  FaceAuth(this.status, this.message, this.emp_no, this.is_match,
+      this.face_found, this.data);
   @override
   String toString() {
     return 'FaceAuth{status: $status, message: $message, emp_no: $emp_no, is_match: $is_match, face_found: $face_found}';

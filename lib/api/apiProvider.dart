@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:citizens/models/checkUpdate/checkUpdateFeed.dart';
 import 'package:citizens/models/faceAuth/faceAuth.dart';
 import 'package:citizens/models/list/listFeed.dart';
@@ -12,6 +14,7 @@ import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/models/token/token.dart';
 import 'package:citizens/utils/session.dart';
 import 'package:citizens/models/newUser/requestStatusFeed.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as http_dio;
 
 class ApiProvider {
@@ -522,6 +525,52 @@ class ApiProvider {
 
   Future<ResponseDio> postCheckFaceAuth(Map data) async {
     http_dio.Dio dio = http_dio.Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
+    dio.options.connectTimeout = 5000;
+    dio.options.receiveTimeout = 5000;
+    http_dio.Response response;
+    var head = {"Content-Type": "application/json"};
+    ResponseDio responseDio;
+    ErrorResponse errorResponse;
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
+    try {
+      // http_dio.FormData formData = http_dio.FormData.from({
+      //   "name": "wendux",
+      //   "age": 25,
+      //   "file":
+      //       await http_dio.MultipartFile.fromFile("./text.txt", filename: "upload.txt")
+      // });
+      response = await dio.post('https://103.137.139.158/checkStatusPostgre',
+          data: http_dio.FormData.fromMap(data),
+          options: http_dio.Options(headers: head));
+      if (response.statusCode == 200) {
+        responseDio = ResponseDio(FaceAuth.from(response.data), 'Sukses');
+      } else {
+        errorResponse = ErrorResponse.from(response.data);
+        responseDio = ResponseDio(errorResponse,
+            '${errorResponse.message} ,E ${response.statusCode}');
+      }
+
+      //print(responseDio);
+      return responseDio;
+    } on http_dio.DioError catch (e) {
+      throw (e);
+    }
+  }
+
+  Future<ResponseDio> postRegisterFace(Map data) async {
+    http_dio.Dio dio = http_dio.Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
     dio.options.connectTimeout = 5000;
     dio.options.receiveTimeout = 5000;
     http_dio.Response response;
@@ -537,7 +586,47 @@ class ApiProvider {
       //       await http_dio.MultipartFile.fromFile("./text.txt", filename: "upload.txt")
       // });
       response = await dio.post(
-          'http://fr.frontier.lottemart.co.id/checkStatusPostgre',
+          'https://103.137.139.158/firstRecognitionPostgre',
+          data: http_dio.FormData.fromMap(data),
+          options: http_dio.Options(headers: head));
+      if (response.statusCode == 200) {
+        responseDio = ResponseDio(FaceAuth.from(response.data), 'Sukses');
+      } else {
+        errorResponse = ErrorResponse.from(response.data);
+        responseDio = ResponseDio(errorResponse,
+            '${errorResponse.message} ,E ${response.statusCode}');
+      }
+
+      //print(responseDio);
+      return responseDio;
+    } on http_dio.DioError catch (e) {
+      throw (e);
+    }
+  }
+
+  Future<ResponseDio> postFaceAuth(Map data) async {
+    http_dio.Dio dio = http_dio.Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
+    dio.options.connectTimeout = 5000;
+    dio.options.receiveTimeout = 5000;
+    http_dio.Response response;
+    var head = {"Content-Type": "application/json"};
+    ResponseDio responseDio;
+    ErrorResponse errorResponse;
+    dio.interceptors.add(http_dio.LogInterceptor(responseBody: true));
+    try {
+      // http_dio.FormData formData = http_dio.FormData.from({
+      //   "name": "wendux",
+      //   "age": 25,
+      //   "file":
+      //       await http_dio.MultipartFile.fromFile("./text.txt", filename: "upload.txt")
+      // });
+      response = await dio.post('https://103.137.139.158/faceAuthPostgre',
           data: http_dio.FormData.fromMap(data),
           options: http_dio.Options(headers: head));
       if (response.statusCode == 200) {

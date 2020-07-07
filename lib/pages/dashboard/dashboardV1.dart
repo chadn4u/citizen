@@ -1,8 +1,6 @@
 import 'package:citizens/pages/citizen/citizen.dart';
-import 'package:citizens/pages/list/list.dart';
 import 'package:citizens/settings/settingScreen.dart';
 import 'package:citizens/utils/colors.dart';
-import 'package:citizens/utils/faceDetector/faceDetector.dart';
 import 'package:citizens/widget/dashboard/curvedNavigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -160,7 +158,7 @@ class Dashboard extends StatelessWidget {
                                         MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       Center(
-                                        child: getTime(), //getTime()
+                                        child: GetTime(), //getTime()
                                       ),
                                     ],
                                   ),
@@ -380,7 +378,7 @@ class CardMenu extends StatelessWidget {
   }
 }
 
-class getTime extends StatelessWidget {
+class GetTime extends StatelessWidget {
   String getSystemTime() {
     var now = DateTime.now();
     return new DateFormat("HH:mm:ss").format(now);

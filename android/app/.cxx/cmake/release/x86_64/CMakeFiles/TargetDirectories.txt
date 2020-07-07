@@ -1,0 +1,3 @@
+D:/Flutter/citizen/android/app/.cxx/cmake/release/x86_64/CMakeFiles/rebuild_cache.dir
+D:/Flutter/citizen/android/app/.cxx/cmake/release/x86_64/CMakeFiles/convertImage.dir
+D:/Flutter/citizen/android/app/.cxx/cmake/release/x86_64/CMakeFiles/edit_cache.dir

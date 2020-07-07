@@ -6,12 +6,10 @@ import 'package:citizens/models/list/listFeed.dart';
 import 'package:citizens/models/list/searchList.dart';
 import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/utils/colors.dart';
-import 'package:citizens/utils/extensions.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/pages/list/detail/listDetail.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
@@ -222,7 +220,6 @@ class _ListDataState extends State<ListData> {
     ProgressDialog pr =
         ProgressDialog(context, isDismissible: true, showLogs: true);
     pr.style(message: 'Please Wait...');
-    changeStatusColor(colorWhite);
     return BlocProvider(
       create: (BuildContext context) => listBloc,
       child: Scaffold(

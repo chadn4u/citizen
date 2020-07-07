@@ -6,9 +6,7 @@ import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:citizens/utils/extensions.dart';
 import 'package:citizens/utils/mainUtils.dart';
-import 'package:citizens/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rounded_letter/rounded_letter.dart';
@@ -84,7 +82,6 @@ class _DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(colorWhite);
     // changeStatusColor(colorPrimary);
     var width = MediaQuery.of(context).size.width;
     width = width - 50;

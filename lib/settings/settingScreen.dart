@@ -3,7 +3,6 @@ import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:citizens/utils/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:citizens/sqlite/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,10 +19,32 @@ class SettingScreen extends StatefulWidget {
   _SettingScreenState createState() => _SettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> {
+class _SettingScreenState extends State<SettingScreen>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print(state.toString());
+    if (state == AppLifecycleState.resumed) {
+      print(state.toString());
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(colorWhite);
     return Scaffold(
       backgroundColor: colorBgSettings,
       appBar: AppBar(

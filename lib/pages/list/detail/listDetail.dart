@@ -1,7 +1,6 @@
 import 'package:citizens/utils/customShapeClippers.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:rounded_letter/rounded_letter.dart';
 import 'package:rounded_letter/shape_type.dart';
 
@@ -23,7 +22,6 @@ class DetailList extends StatefulWidget {
 class _DetailListState extends State<DetailList> {
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[900]);
     return Scaffold(
       body: Container(
         child: Column(

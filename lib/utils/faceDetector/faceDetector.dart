@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CameraPreviewScanner extends StatelessWidget {
+  final String empId;
+
+  const CameraPreviewScanner({Key key, this.empId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     FaceAuthProvider _faceAuthProvider = FaceAuthProvider();
-    _faceAuthProvider.init();
+    _faceAuthProvider.init(empId, context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ML Vision Example'),
+        title: const Text('Face Registration'),
       ),
       body: ChangeNotifierProvider(
         create: (_) => _faceAuthProvider,

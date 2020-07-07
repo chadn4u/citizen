@@ -13,6 +13,9 @@ FaceAuth _$FaceAuthFromJson(Map<String, dynamic> json) {
     json['emp_no'] as String,
     json['is_match'] as bool,
     json['face_found'] as bool,
+    json['data'] == null
+        ? null
+        : ModelLogin.from(json['data'] as Map<String, dynamic>),
   );
 }
 
@@ -22,4 +25,5 @@ Map<String, dynamic> _$FaceAuthToJson(FaceAuth instance) => <String, dynamic>{
       'emp_no': instance.emp_no,
       'is_match': instance.is_match,
       'face_found': instance.face_found,
+      'data': instance.data,
     };

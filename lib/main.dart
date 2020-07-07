@@ -5,7 +5,6 @@ import 'package:citizens/pages/splash/splashScreenV1.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,7 +63,6 @@ void main() async {
     }
   });
 
-  FlutterStatusbarcolor.setStatusBarColor(colorPrimary);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: 'Flutter Demo',

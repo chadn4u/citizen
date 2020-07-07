@@ -11,23 +11,12 @@ import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:citizens/widget/carouselSlider.dart';
 import 'package:citizens/models/settings/tableAuth.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:simple_animations/simple_animations.dart';
 
 import 'faceDetector/faceDetector.dart';
-
-changeStatusColor(Color color) async {
-  try {
-    await FlutterStatusbarcolor.setStatusBarColor(color, animate: true);
-    FlutterStatusbarcolor.setStatusBarWhiteForeground(
-        useWhiteForeground(color));
-  } on Exception catch (e) {
-    print(e);
-  }
-}
 
 BoxDecoration boxDecoration(
     {double radius = 2,
@@ -180,17 +169,22 @@ Widget quizSettingOptionPattern1(
                 FaceAuth faceAuth = state.responsedio.data;
                 return (faceAuth.status)
                     ? Expanded(
-                        child: Text(
-                          'Active',
-                          style: TextStyle(color: Colors.green, fontSize: 12),
+                        child: Center(
+                          child: Text(
+                            'Active',
+                            style: TextStyle(color: Colors.green, fontSize: 12),
+                          ),
                         ),
                       )
                     : Expanded(
                         child: FlatButton(
                           onPressed: () {
-                            print('tapped');
-                            Navigator.push(ctx, MaterialPageRoute(
-                                builder: (context) => CameraPreviewScanner()));
+                            Navigator.pushReplacement(
+                                ctx,
+                                MaterialPageRoute(
+                                    builder: (context) => CameraPreviewScanner(
+                                          empId: sessionId,
+                                        )));
                           },
                           child: Text(
                             "Not Active",
@@ -202,13 +196,13 @@ Widget quizSettingOptionPattern1(
                   state is FaceUninitializedState) {
                 return CircularProgressIndicator();
               } else {
-                print('there');
                 return Expanded(
                   child: FlatButton(
                     onPressed: () {
-                      print('tapped');
-                      Navigator.push(ctx, MaterialPageRoute(
-                          builder: (context) => CameraPreviewScanner()));
+                      Navigator.push(
+                          ctx,
+                          MaterialPageRoute(
+                              builder: (context) => CameraPreviewScanner()));
                     },
                     child: Text(
                       "Not Active",

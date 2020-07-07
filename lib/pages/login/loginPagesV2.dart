@@ -1,7 +1,6 @@
 import 'package:citizens/api/apiRepository.dart';
 import 'package:citizens/models/login/modelLoginFeed.dart';
 import 'package:citizens/models/responseDio/errorResponse.dart';
-import 'package:citizens/models/settings/tableAuth.dart';
 import 'package:citizens/models/token/token.dart';
 import 'package:citizens/models/token/tokenRequest.dart';
 import 'package:citizens/pages/dashboard/dashboardV1.dart';
@@ -9,6 +8,7 @@ import 'package:citizens/sqlite/auth.dart';
 import 'package:citizens/utils/colors.dart';
 import 'package:citizens/utils/const.dart';
 import 'package:citizens/utils/extensions.dart';
+import 'package:citizens/utils/faceDetector/faceAuthLogin.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:citizens/utils/session.dart';
 import 'package:dio/dio.dart';
@@ -20,7 +20,6 @@ import 'package:package_info/package_info.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
 import '../loginpages.dart';
-import '../mainMenu.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -52,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
       print(canCheckBiometrics);
       _canCheckBiometrics = canCheckBiometrics;
     });
-    
   }
 
   Future<void> _authenticate(ProgressDialog pr) async {
@@ -73,10 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
     } on PlatformException catch (e) {
       print(e);
       if (_scaffoldKey != null || !_canCheckBiometrics) {
-      _scaffoldKey.currentState.removeCurrentSnackBar();
-      _scaffoldKey.currentState
-          .showSnackBar(SnackBar(content: Text('Ooops sorry we cant detect biometric in this device')));
-    }
+        _scaffoldKey.currentState.removeCurrentSnackBar();
+        _scaffoldKey.currentState.showSnackBar(SnackBar(
+            content:
+                Text('Ooops sorry we cant detect biometric in this device')));
+      }
     }
     if (!mounted) return;
 
@@ -200,7 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
     ProgressDialog pr =
         ProgressDialog(context, isDismissible: false, showLogs: true);
     pr.style(message: 'Please Wait...');
-    changeStatusColor(colorWhite);
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -289,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             margin: EdgeInsets.only(right: 16),
                             alignment: Alignment.center,
                             height: width / 10,
-                            width: MediaQuery.of(context).size.width * 0.6,
+                            width: MediaQuery.of(context).size.width * 0.45,
                             child: text('Sign In',
                                 textColor: colorWhite, isCentered: true),
                             decoration:
@@ -315,6 +313,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               return Container();
                             }
                           },
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => FaceAuthLogin()));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle, color: colorPrimary),
+                            width: 45,
+                            height: 45,
+                            padding: EdgeInsets.all(4),
+                            child: Container(
+                              child: Image.asset(
+                                "assets/images/face_recog.png",
+                                color: Colors.white,
+                                fit: BoxFit.cover,
+                              ),
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
                         )
                       ],
                     )

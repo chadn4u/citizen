@@ -41,7 +41,6 @@ class WalkthroughScrreenState extends State<WalkthroughScrreen> {
 
   @override
   Widget build(BuildContext context) {
-    changeStatusColor(Colors.transparent);
     return Scaffold(
         body: SafeArea(
       child: Stack(

@@ -32,4 +32,8 @@ class ApiRepository {
       await apiProvider.postEnableUser(data);
   Future<ResponseDio> postCheckFaceAuthRepo(Map<String, dynamic> data) async =>
       await apiProvider.postCheckFaceAuth(data);
+  Future<ResponseDio> postRegisterFaceRepo(Map<String, dynamic> data) async =>
+      await apiProvider.postRegisterFace(data);
+  Future<ResponseDio> postFaceAuthRepo(Map<String, dynamic> data) async =>
+      await apiProvider.postFaceAuth(data);
 }

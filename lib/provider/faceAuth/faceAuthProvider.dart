@@ -3,8 +3,12 @@ import 'dart:io';
 import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
+import 'package:citizens/api/apiRepository.dart';
+import 'package:citizens/models/faceAuth/faceAuth.dart';
+import 'package:citizens/models/responseDio/responseDio.dart';
 import 'package:citizens/utils/faceDetector/detector_painters.dart';
 import 'package:citizens/utils/faceDetector/scannerUtils.dart';
+import 'package:dio/dio.dart';
 import 'package:downloads_path_provider/downloads_path_provider.dart';
 import 'package:ffi/ffi.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
@@ -55,9 +59,6 @@ class FaceAuthProvider with ChangeNotifier {
   int get imageHeight => _imageHeight;
   int _imageWidth = 0;
   int get imageWidth => _imageWidth;
-
-  StreamController<List<dynamic>> streamControllerMaskDetect =
-      new StreamController();
   //
   CameraLensDirection _direction = CameraLensDirection.front;
   CameraLensDirection get direction => _direction;
@@ -77,30 +78,27 @@ class FaceAuthProvider with ChangeNotifier {
 
   bool _isSmile = false;
   bool get isSmile => _isSmile;
+
+  bool _isMultiple = false;
+  bool get isMultiple => _isMultiple;
   //
+
+  String _empNo;
+  BuildContext _context;
 
   final BarcodeDetector _barcodeDetector =
       FirebaseVision.instance.barcodeDetector();
   final FaceDetector _faceDetector = FirebaseVision.instance
       .faceDetector(FaceDetectorOptions(enableClassification: true));
 
-  void init() {
+  void init(String empNo, BuildContext context) {
+    _empNo = empNo;
+    _context = context;
     loadModel();
     _initializeCamera();
     conv = convertImageLib
         .lookup<NativeFunction<convert_func>>('convertImage')
         .asFunction<Convert>();
-    streamControllerMaskDetect.stream.listen((event) {
-      event.forEach((element) {
-        if (element["label"] == '0 with_mask' && (element['confidence'] * 100) > 80 && isDetected) {
-          _result = 'Mask Detected ${(element['confidence'] * 100).toStringAsFixed(0)}%';
-          _isMasked = true;
-        } else {
-          _result = "";
-          _isMasked = false;
-        }
-      });
-    });
   }
 
   @override
@@ -109,7 +107,6 @@ class FaceAuthProvider with ChangeNotifier {
       _barcodeDetector.close();
       _faceDetector.close();
     });
-    streamControllerMaskDetect.sink;
     _currentDetector = null;
     super.dispose();
   }
@@ -152,8 +149,8 @@ class FaceAuthProvider with ChangeNotifier {
     await _camera
         .initialize()
         .then((value) => _camera.startImageStream((CameraImage image) {
-              _savedImage = image;
-              // if (_isDetected) return;
+              if (!_isDetected) _savedImage = image;
+
               ScannerUtils.detect(
                 image: image,
                 detectInImage: _getDetectionMethod(),
@@ -161,35 +158,8 @@ class FaceAuthProvider with ChangeNotifier {
               ).then(
                 (dynamic results) {
                   if (_currentDetector == null) return;
-                  if (results is List<Face>) {
-                    if (results.length > 1) {
-                      _result = "Multiple Face Detected";
-                      notifyListeners();
-                    } else {
-                      Tflite.runModelOnFrame(
-                        bytesList: image.planes.map(
-                          (plane) {
-                            return plane.bytes;
-                          },
-                        ).toList(),
-                        threshold: 0.5,
-                        rotation: 0,
-                        imageHeight: image.height,
-                        imageWidth: image.width,
-                        numResults: 1,
-                      ).then(
-                        (recognitions) {
-                          _recognitions = recognitions;
-                          streamControllerMaskDetect.add(_recognitions);
-                          _imageHeight = image.height;
-                          _imageWidth = image.width;
-                          // isDetecting = false;
-                        },
-                      );
-                      _scanResults = results;
-                      _buildResults();
-                    }
-                  }
+                  _scanResults = results;
+                  _buildResults();
                 },
               );
             }));
@@ -210,6 +180,12 @@ class FaceAuthProvider with ChangeNotifier {
       return _faceDetector.processImage;
 
     return null;
+  }
+
+  Future<File> fixExifRotation(String imagePath) async {
+    final originalFile = File(imagePath);
+
+    return originalFile;
   }
 
   imglib.Image convertImage() {
@@ -247,6 +223,9 @@ class FaceAuthProvider with ChangeNotifier {
         imglib.Image.fromBytes(_savedImage.height, _savedImage.width, imgData);
     print("4 =====> ${stopwatch.elapsedMilliseconds}");
 
+    if (img.height < img.width) {
+      if (img.exif.data.containsKey('Horizontal')) {}
+    }
     // Free the memory space allocated
     // from the planes and the converted data
     free(p);
@@ -256,7 +235,7 @@ class FaceAuthProvider with ChangeNotifier {
     return img;
   }
 
-  void _saveImage(imglib.Image uint8List) async {
+  Future<String> _saveImage(imglib.Image uint8List) async {
     String filename = DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
     bool isDirExist = await Directory(_localPath).exists();
     if (!isDirExist) Directory(_localPath).create();
@@ -266,6 +245,8 @@ class FaceAuthProvider with ChangeNotifier {
     if (isExist) await image.delete();
     File(tempPath).writeAsBytesSync(encodeJpg(uint8List),
         mode: FileMode.write, flush: true);
+
+    return tempPath;
   }
 
   void _buildResults() {
@@ -299,16 +280,7 @@ class FaceAuthProvider with ChangeNotifier {
           notifyListeners();
           return;
         }
-        for (Face face in _scanResults) {
-          if (face.smilingProbability > 0.8) {
-            _result = "Terima kasih telah tersenyum";
-            notifyListeners();
-          } else {
-            _result = "";
-            notifyListeners();
-          }
-        }
-        if (!_isProcessing) takePicture();
+        if (!_isDetected) takePicture();
         painter = FaceDetectorPainter(imageSize, _scanResults);
         break;
       default:
@@ -332,15 +304,130 @@ class FaceAuthProvider with ChangeNotifier {
         if (face.boundingBox == null)
           _isDetected = false;
         else {
-          if (!_isProcessing) {
+          if (!_isDetected) {
             _isDetected = true;
             _isProcessing = true;
-            Future.delayed(Duration(seconds: 3), () {
-              _saveImage(convertImage());
-            });
+
+            if (_scanResults.length > 1) {
+              _result = "Multiple Face Detected";
+              _isMultiple = true;
+              _isDetected = false;
+              notifyListeners();
+              return;
+            }
+            if (face.smilingProbability > 0.8) {
+              _result = "Smile Detected";
+              _isSmile = true;
+              if (_isMultiple || _isMasked || !_isSmile) {
+                print('multiple $_isMultiple masked $_isMasked smile $isSmile');
+                notifyListeners();
+                Future.delayed(Duration(seconds: 2), () {
+                  _isMultiple = false;
+                  _isMasked = false;
+                  _isSmile = false;
+                  _isDetected = false;
+                  _result = "";
+                  notifyListeners();
+                });
+              } else {
+                _result = "Processing Image";
+                notifyListeners();
+                _saveImage(convertImage()).then((value) async {
+                  await fixExifRotation(value);
+                  var output = await Tflite.runModelOnImage(
+                    path: value, // required
+                    imageMean: 127.5, // defaults to 117.0
+                    imageStd: 127.5, // defaults to 1.0
+                    numResults: 1, // defaults to 5
+                    threshold: 0.5, // defaults to 0.1
+                    asynch: true, // defaults to true
+                  );
+                  if (output != null) {
+                    output.forEach((element) async {
+                      if (element["label"] == '0 with_mask' &&
+                          (element['confidence'] * 100) > 80 &&
+                          isDetected) {
+                        _result =
+                            'Mask Detected ${(element['confidence'] * 100).toStringAsFixed(0)}%';
+                        _isMultiple = false;
+                        _isMasked = false;
+                        _isSmile = false;
+                        _isDetected = false;
+                        notifyListeners();
+                      } else {
+                        Map<String, dynamic> _dataForRequest = new Map();
+                        _dataForRequest['emp_no'] = _empNo;
+                        _dataForRequest['file'] = await MultipartFile.fromFile(
+                            value,
+                            filename: "faceauth.jpg");
+                        ApiRepository _apiRepository = ApiRepository();
+                        try {
+                          ResponseDio responseDio = await _apiRepository
+                              .postRegisterFaceRepo(_dataForRequest);
+                          if (responseDio != null) {
+                            FaceAuth _faceAuth = responseDio.data;
+                            if (_faceAuth.status &&
+                                _faceAuth.message ==
+                                    'Face Succesfully Registered') {
+                              _result = _faceAuth.message;
+                              notifyListeners();
+                              Future.delayed(Duration(seconds: 3), () {
+                                Navigator.pop(_context);
+                              });
+                            }
+                          } else {
+                            _result = 'Failed processing image';
+                            notifyListeners();
+
+                            _isMultiple = false;
+                            _isMasked = false;
+                            _isSmile = false;
+                            _isDetected = false;
+                          }
+                        } catch (e) {
+                          if (e is DioError) {
+                            _result = e.message;
+                            notifyListeners();
+
+                            _isMultiple = false;
+                            _isMasked = false;
+                            _isSmile = false;
+                            _isDetected = false;
+                          }
+                        }
+                        // final file = File(value);
+                        // file.deleteSync(recursive: false);
+                      }
+                    });
+                  }
+                });
+              }
+            } else {
+              _result = "Smile Please";
+              _isSmile = false;
+              _isDetected = false;
+              notifyListeners();
+              return;
+            }
           }
         }
       }
     }
+  }
+
+  Uint8List imageToByteListFloat32(
+      imglib.Image image, int inputSize, double mean, double std) {
+    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+    var buffer = Float32List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = (imglib.getRed(pixel) - mean) / std;
+        buffer[pixelIndex++] = (imglib.getGreen(pixel) - mean) / std;
+        buffer[pixelIndex++] = (imglib.getBlue(pixel) - mean) / std;
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
   }
 }

@@ -4,7 +4,7 @@
 	"cFileExtensions" : [ "c" ],
 	"cleanCommands" : 
 	[
-		"C:\\Users\\chadp\\AppData\\Local\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Flutter\\citizen\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
+		"C:\\Users\\user\\AppData\\Local\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Flutter\\citizen\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
 	],
 	"libraries" : 
 	{
@@ -12,27 +12,27 @@
 		{
 			"abi" : "armeabi-v7a",
 			"artifactName" : "convertImage",
-			"buildCommand" : "C:\\Users\\chadp\\AppData\\Local\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Flutter\\citizen\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target convertImage",
+			"buildCommand" : "C:\\Users\\user\\AppData\\Local\\Android\\sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build D:\\Flutter\\citizen\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target convertImage",
 			"buildType" : "debug",
 			"files" : 
 			[
 				
 				{
-					"flags" : "  --target=armv7-none-linux-androideabi21 --gcc-toolchain=C:/Users/chadp/AppData/Local/Android/sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/chadp/AppData/Local/Android/sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/sysroot -DconvertImage_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
+					"flags" : "  --target=armv7-none-linux-androideabi21 --gcc-toolchain=C:/Users/user/AppData/Local/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/user/AppData/Local/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/sysroot -DconvertImage_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC      -c ",
 					"src" : "D:/Flutter/citizen/ios/Classes/converter.c",
 					"workingDirectory" : "D:/Flutter/citizen/android/app/.cxx/cmake/debug/armeabi-v7a"
 				}
 			],
 			"output" : "D:/Flutter/citizen/build/app/intermediates/cmake/debug/obj/armeabi-v7a/libconvertImage.so",
-			"toolchain" : "2362253129"
+			"toolchain" : "1239600697"
 		}
 	},
 	"toolchains" : 
 	{
-		"2362253129" : 
+		"1239600697" : 
 		{
-			"cCompilerExecutable" : "C:/Users/chadp/AppData/Local/Android/sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
-			"cppCompilerExecutable" : "C:/Users/chadp/AppData/Local/Android/sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+			"cCompilerExecutable" : "C:/Users/user/AppData/Local/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/user/AppData/Local/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
 		}
 	}
 }

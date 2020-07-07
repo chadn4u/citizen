@@ -3,7 +3,6 @@ import 'package:citizens/pages/loginpages.dart';
 import 'package:citizens/pages/repairing/repairing.dart';
 import 'package:citizens/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rounded_letter/rounded_letter.dart';
 import 'package:rounded_letter/shape_type.dart';
@@ -259,7 +258,6 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.blue[900]);
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
