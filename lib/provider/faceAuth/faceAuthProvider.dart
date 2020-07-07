@@ -182,12 +182,6 @@ class FaceAuthProvider with ChangeNotifier {
     return null;
   }
 
-  Future<File> fixExifRotation(String imagePath) async {
-    final originalFile = File(imagePath);
-
-    return originalFile;
-  }
-
   imglib.Image convertImage() {
     Stopwatch stopwatch = new Stopwatch()..start();
     // Allocate memory for the 3 planes of the image
@@ -232,6 +226,7 @@ class FaceAuthProvider with ChangeNotifier {
     free(p1);
     free(p2);
     free(imgP);
+    img = imglib.copyRotate(img, 180);
     return img;
   }
 
@@ -333,7 +328,6 @@ class FaceAuthProvider with ChangeNotifier {
                 _result = "Processing Image";
                 notifyListeners();
                 _saveImage(convertImage()).then((value) async {
-                  await fixExifRotation(value);
                   var output = await Tflite.runModelOnImage(
                     path: value, // required
                     imageMean: 127.5, // defaults to 117.0

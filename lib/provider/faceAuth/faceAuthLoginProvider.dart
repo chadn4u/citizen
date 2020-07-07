@@ -17,7 +17,6 @@ import 'package:ffi/ffi.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:image/image.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as imglib;
@@ -184,11 +183,6 @@ class FaceAuthLoginProvider with ChangeNotifier {
     return null;
   }
 
-  Future<File> fixExifRotation(String imagePath) async {
-    File image = await FlutterExifRotation.rotateAndSaveImage(path: imagePath);
-    return image;
-  }
-
   imglib.Image convertImage() {
     Stopwatch stopwatch = new Stopwatch()..start();
     // Allocate memory for the 3 planes of the image
@@ -224,15 +218,13 @@ class FaceAuthLoginProvider with ChangeNotifier {
         imglib.Image.fromBytes(_savedImage.height, _savedImage.width, imgData);
     print("4 =====> ${stopwatch.elapsedMilliseconds}");
 
-    if (img.height < img.width) {
-      if (img.exif.data.containsKey('Horizontal')) {}
-    }
     // Free the memory space allocated
     // from the planes and the converted data
     free(p);
     free(p1);
     free(p2);
     free(imgP);
+    img = imglib.copyRotate(img, 180);
     return img;
   }
 
@@ -333,8 +325,8 @@ class FaceAuthLoginProvider with ChangeNotifier {
               } else {
                 _result = "Processing Image";
                 notifyListeners();
+
                 _saveImage(convertImage()).then((value) async {
-                  File _tempFile = await fixExifRotation(value);
                   var output = await Tflite.runModelOnImage(
                     path: value, // required
                     imageMean: 127.5, // defaults to 117.0
